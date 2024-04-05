@@ -1,0 +1,274 @@
+<patch-1.0 appVersion="1.0.12">
+   <obj type="altcircuits/kcontrol-mini/inputs" uuid="2e243b7c-ee75-4e46-9d1a-38fbfd6d67b0" name="inputs_1" x="28" y="28">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="math/*" uuid="922423f2db9f222aa3e5ba095778288c446da47a" name="*_1" x="420" y="28">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="altcircuits/kcontrol-mini/pwm-leds" uuid="bf677d07-c8c5-4d3e-8612-615ceee8f5b7" name="pwm-leds_1" x="504" y="28">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="audio/inconfig l" uuid="7007d026acb7c3586f60a7f0898718d1ca7e0607" name="inconfig_1" x="672" y="28">
+      <params/>
+      <attribs>
+         <combo attributeName="gain" selection="-12dB"/>
+         <combo attributeName="boost" selection="0dB"/>
+      </attribs>
+   </obj>
+   <obj type="audio/in stereo" uuid="99848ad6d90a8e615e83b2e619cfc806f28e7281" name="in_1" x="784" y="28">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="jaffa/mix/StMix2" uuid="bc2c1af1-7db6-4822-b224-e06ee98c8b90" name="obj_1" x="1092" y="28">
+      <params>
+         <frac32.u.map name="1 Gain" value="64.0"/>
+         <frac32.u.map name="2 Gain" value="17.0"/>
+      </params>
+      <attribs/>
+   </obj>
+   <obj type="drj/audio/out_stereo_vol" uuid="awca1a567f535acc21055669829101d3ee7f0189" name="out_stereo_vol_1" x="1204" y="28">
+      <params>
+         <frac32.u.map name="volume" value="56.5"/>
+      </params>
+      <attribs/>
+   </obj>
+   <obj type="math/*" uuid="922423f2db9f222aa3e5ba095778288c446da47a" name="*_2" x="420" y="98">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="audio/inconfig r" uuid="8468fe7907553f335959a7f69cbc5a1f7b5d4d1d" name="inconfig_2" x="672" y="98">
+      <params/>
+      <attribs>
+         <combo attributeName="gain" selection="-12dB"/>
+         <combo attributeName="boost" selection="0dB"/>
+      </attribs>
+   </obj>
+   <obj type="math/*" uuid="922423f2db9f222aa3e5ba095778288c446da47a" name="*_3" x="420" y="168">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="audio/outconfig" uuid="eace67e3304afaa1bb695b444e9345f2d8adaf00" name="outconfig_1" x="672" y="182">
+      <params/>
+      <attribs>
+         <combo attributeName="headphones" selection="-18dB"/>
+         <combo attributeName="mode" selection="Stereo"/>
+      </attribs>
+   </obj>
+   <obj type="osc/brds/saw" uuid="ed06f020-7e68-4db6-836a-95a85e200cfb" name="saw_1" x="784" y="182">
+      <params>
+         <frac32.s.map name="pitch" value="-10.0"/>
+      </params>
+      <attribs/>
+   </obj>
+   <obj type="jaffa/disp/Vu4" uuid="faf65306-1769-418a-815e-ac7926c57d8f" name="Vu4_1" x="1092" y="210">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="lfo/sine r" uuid="725d481acbefa181fa5d92f414d317c86b77b789" name="sine_9" x="266" y="224">
+      <params>
+         <frac32.s.map name="pitch" value="-20.0"/>
+      </params>
+      <attribs/>
+   </obj>
+   <obj type="osc/sine" uuid="6e094045cca76a9dbf7ebfa72e44e4700d2b3ba" name="sine_1" x="784" y="280">
+      <params>
+         <frac32.s.map name="pitch" value="-19.0"/>
+      </params>
+      <attribs/>
+   </obj>
+   <obj type="mix/mix 1" uuid="e8f482af5b1ec4a2e9cf8ac7ce09e7c0e43cea08" name="mix_1" x="924" y="308">
+      <params>
+         <frac32.u.map name="gain1" value="64.0"/>
+      </params>
+      <attribs/>
+   </obj>
+   <obj type="lfo/sine r" uuid="725d481acbefa181fa5d92f414d317c86b77b789" name="sine_10" x="266" y="350">
+      <params>
+         <frac32.s.map name="pitch" value="-30.0"/>
+      </params>
+      <attribs/>
+   </obj>
+   <obj type="mix/mix 1" uuid="e8f482af5b1ec4a2e9cf8ac7ce09e7c0e43cea08" name="mix_2" x="924" y="406">
+      <params>
+         <frac32.u.map name="gain1" value="38.5"/>
+      </params>
+      <attribs/>
+   </obj>
+   <obj type="lfo/sine r" uuid="725d481acbefa181fa5d92f414d317c86b77b789" name="sine_11" x="266" y="476">
+      <params>
+         <frac32.s.map name="pitch" value="-28.0"/>
+      </params>
+      <attribs/>
+   </obj>
+   <obj type="matroe/midi/monitor plus" uuid="24041ea8-5198-4f61-a350-3f637579244c" name="monitor_1" x="560" y="546">
+      <params>
+         <bool32.tgl name="ControlChange" value="1"/>
+         <bool32.tgl name="Note" value="1"/>
+         <bool32.tgl name="ProgramChange" value="1"/>
+         <bool32.tgl name="Bend" value="1"/>
+         <bool32.tgl name="PolyPressure" value="1"/>
+         <bool32.tgl name="ChannelPressure" value="1"/>
+         <bool32.tgl name="Clock" value="0"/>
+         <bool32.tgl name="StartStop" value="1"/>
+      </params>
+      <attribs/>
+   </obj>
+   <obj type="drj/midi/clock_tx" uuid="92a7e9ec6bae23a35b1204aa14c130af4b3a4793" name="clock_tx_1" x="700" y="546">
+      <params/>
+      <attribs>
+         <combo attributeName="device" selection="din"/>
+      </attribs>
+   </obj>
+   <obj type="lfo/sine r" uuid="725d481acbefa181fa5d92f414d317c86b77b789" name="sine_7" x="266" y="602">
+      <params>
+         <frac32.s.map name="pitch" value="-29.0"/>
+      </params>
+      <attribs/>
+   </obj>
+   <obj type="lfo/sine r" uuid="725d481acbefa181fa5d92f414d317c86b77b789" name="sine_8" x="266" y="728">
+      <params>
+         <frac32.s.map name="pitch" value="-33.0"/>
+      </params>
+      <attribs/>
+   </obj>
+   <obj type="midi/intern/clock" uuid="7f6f35e92d2c29e950af2b3af5cebb2e9e3b778c" name="clock_2" x="574" y="728">
+      <params>
+         <frac32.u.map name="bpm" value="43.0"/>
+      </params>
+      <attribs/>
+   </obj>
+   <obj type="midi/out/clock" uuid="12b916e835bb6fc9fa4f2c858d1d1a72d5cf6d08" name="clock_1" x="700" y="728">
+      <params>
+         <frac32.u.map name="bpm" value="14.5"/>
+      </params>
+      <attribs>
+         <combo attributeName="device" selection="din"/>
+      </attribs>
+   </obj>
+   <obj type="logic/flipflop toggle" uuid="195e489e5fc3d275944b0de56c7a91c8641ea22a" name="flipflop_1" x="420" y="742">
+      <params/>
+      <attribs/>
+   </obj>
+   <nets>
+      <net>
+         <source obj="sine_9" outlet="wave"/>
+         <dest obj="*_1" inlet="b"/>
+      </net>
+      <net>
+         <source obj="sine_10" outlet="wave"/>
+         <dest obj="*_2" inlet="b"/>
+      </net>
+      <net>
+         <source obj="sine_11" outlet="wave"/>
+         <dest obj="*_3" inlet="b"/>
+      </net>
+      <net>
+         <source obj="saw_1" outlet="wave"/>
+         <dest obj="mix_1" inlet="in1"/>
+      </net>
+      <net>
+         <source obj="sine_1" outlet="wave"/>
+         <dest obj="mix_2" inlet="in1"/>
+      </net>
+      <net>
+         <source obj="in_1" outlet="left"/>
+         <dest obj="obj_1" inlet="1L"/>
+         <dest obj="Vu4_1" inlet="1"/>
+      </net>
+      <net>
+         <source obj="in_1" outlet="right"/>
+         <dest obj="obj_1" inlet="1R"/>
+         <dest obj="Vu4_1" inlet="2"/>
+      </net>
+      <net>
+         <source obj="obj_1" outlet="L Out"/>
+         <dest obj="out_stereo_vol_1" inlet="left"/>
+      </net>
+      <net>
+         <source obj="obj_1" outlet="R Out"/>
+         <dest obj="out_stereo_vol_1" inlet="right"/>
+      </net>
+      <net>
+         <source obj="mix_1" outlet="out"/>
+         <dest obj="obj_1" inlet="2L"/>
+         <dest obj="Vu4_1" inlet="3"/>
+      </net>
+      <net>
+         <source obj="mix_2" outlet="out"/>
+         <dest obj="obj_1" inlet="2R"/>
+         <dest obj="Vu4_1" inlet="4"/>
+      </net>
+      <net>
+         <source obj="inputs_1" outlet="PA0"/>
+         <dest obj="*_1" inlet="a"/>
+      </net>
+      <net>
+         <source obj="inputs_1" outlet="PA1"/>
+         <dest obj="*_2" inlet="a"/>
+      </net>
+      <net>
+         <source obj="inputs_1" outlet="PA2"/>
+         <dest obj="*_3" inlet="a"/>
+      </net>
+      <net>
+         <source obj="*_1" outlet="result"/>
+         <dest obj="pwm-leds_1" inlet="R"/>
+      </net>
+      <net>
+         <source obj="*_2" outlet="result"/>
+         <dest obj="pwm-leds_1" inlet="G"/>
+      </net>
+      <net>
+         <source obj="*_3" outlet="result"/>
+         <dest obj="pwm-leds_1" inlet="B"/>
+      </net>
+      <net>
+         <source obj="sine_7" outlet="wave"/>
+         <dest obj="pwm-leds_1" inlet="BlueButton"/>
+      </net>
+      <net>
+         <source obj="inputs_1" outlet="PA3"/>
+         <dest obj="sine_9" inlet="pitch"/>
+         <dest obj="sine_10" inlet="pitch"/>
+         <dest obj="sine_11" inlet="pitch"/>
+         <dest obj="sine_7" inlet="pitch"/>
+         <dest obj="sine_8" inlet="pitch"/>
+      </net>
+      <net>
+         <source obj="inputs_1" outlet="ButtonPA9"/>
+         <dest obj="flipflop_1" inlet="trig"/>
+      </net>
+      <net>
+         <source obj="flipflop_1" outlet="o"/>
+         <dest obj="clock_tx_1" inlet="start"/>
+         <dest obj="clock_2" inlet="run"/>
+         <dest obj="clock_1" inlet="run"/>
+      </net>
+      <net>
+         <source obj="inputs_1" outlet="ButtonPC1"/>
+         <dest obj="flipflop_1" inlet="reset"/>
+      </net>
+      <net>
+         <source obj="sine_8" outlet="wave"/>
+         <dest obj="pwm-leds_1" inlet="OrangeButton"/>
+      </net>
+   </nets>
+   <settings>
+      <subpatchmode>polychannel</subpatchmode>
+      <MidiChannel>1</MidiChannel>
+      <NPresets>8</NPresets>
+      <NPresetEntries>32</NPresetEntries>
+      <NModulationSources>0</NModulationSources>
+      <NModulationTargetsPerSource>0</NModulationTargetsPerSource>
+   </settings>
+   <notes><![CDATA[]]></notes>
+   <windowPos>
+      <x>622</x>
+      <y>175</y>
+      <width>2196</width>
+      <height>989</height>
+   </windowPos>
+</patch-1.0>

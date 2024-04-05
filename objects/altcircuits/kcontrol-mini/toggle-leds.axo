@@ -1,0 +1,93 @@
+<objdefs appVersion="1.0.12">
+   <obj.normal id="toggle-leds" uuid="753c1ad4-33cd-4f61-9556-bf858b9b0c60">
+      <sDescription>K-Control Mini Toggle LED Contols
+
+NOTE: Only use Toggle or PWM control, but not both in the same patch for now...</sDescription>
+      <author>Alt Circuits</author>
+      <license>GPL-3.0</license>
+      <inlets>
+         <bool32.rising name="R"/>
+         <bool32.rising name="G"/>
+         <bool32.rising name="B"/>
+         <bool32.rising name="BlueButton"/>
+         <bool32.rising name="OrangeButton"/>
+      </inlets>
+      <outlets/>
+      <displays>
+         <bool32 name="R"/>
+         <bool32 name="G"/>
+         <bool32 name="B"/>
+         <bool32 name="BlueButton"/>
+         <bool32 name="OrangeButton"/>
+      </displays>
+      <params/>
+      <attribs/>
+      <code.declaration><![CDATA[int rtrig,gtrig,btrig,bbtrig,obtrig;
+int rop,gop,bop,bbop,obop;]]></code.declaration>
+      <code.init><![CDATA[#ifndef ALTCIRCUITS_USING_TOGGLE_LEDS
+#define ALTCIRCUITS_USING_TOGGLE_LEDS
+#endif
+#ifdef ALTCIRCUITS_USING_PWM_LEDS
+#error "Can't use both the Toggle and PWD LED Controls in the same patch for now..."
+#endif
+
+rop = 0;
+gop = 0;
+bop = 0;
+bbop = 0;
+obop = 0;
+
+rtrig = 1;
+gtrig = 1;
+btrig = 1;
+bbtrig = 1;
+obtrig = 1;
+
+palSetPadMode(GPIOA, 5, PAL_MODE_OUTPUT_PUSHPULL); // Green
+palSetPadMode(GPIOA, 6, PAL_MODE_OUTPUT_PUSHPULL); // Blue
+palSetPadMode(GPIOA, 7, PAL_MODE_OUTPUT_PUSHPULL); // Red
+palSetPadMode(GPIOB, 7, PAL_MODE_OUTPUT_PUSHPULL); // Blue Button
+palSetPadMode(GPIOC, 7, PAL_MODE_OUTPUT_PUSHPULL); // Red Button]]></code.init>
+      <code.krate><![CDATA[if ((inlet_R>0) && !rtrig) {
+	rop = !rop; 
+	rtrig=1;
+}
+if (!(inlet_R>0)) rtrig=0;
+
+if ((inlet_G>0) && !gtrig) {
+	gop = !gop; 
+	gtrig=1;
+}
+if (!(inlet_G>0)) gtrig=0;
+
+if ((inlet_B>0) && !btrig) {
+	bop = !bop; 
+	btrig=1;
+}
+if (!(inlet_B>0)) btrig=0;
+
+if ((inlet_BlueButton>0) && !bbtrig) {
+	bbop = !bbop; 
+	bbtrig=1;
+}
+if (!(inlet_BlueButton>0)) bbtrig=0;
+
+if ((inlet_OrangeButton>0) && !obtrig) {
+	obop = !obop; 
+	obtrig=1;
+}
+if (!(inlet_OrangeButton>0)) obtrig=0;
+
+disp_R            = (rop<<27);
+disp_G            = (gop<<27);
+disp_B            = (bop<<27);
+disp_BlueButton   = (bbop<<27);
+disp_OrangeButton = (obop<<27);
+
+palWritePad(GPIOA,5, (disp_G >0));
+palWritePad(GPIOA,6, (disp_B >0));
+palWritePad(GPIOA,7, (disp_R >0));
+palWritePad(GPIOB,7, (disp_BlueButton >0));
+palWritePad(GPIOC,7, (disp_OrangeButton >0));]]></code.krate>
+   </obj.normal>
+</objdefs>
