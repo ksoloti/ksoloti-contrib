@@ -1,0 +1,60 @@
+<objdefs appVersion="1.0.12">
+   <obj.normal id="pwm-leds" uuid="bf677d07-c8c5-4d3e-8612-615ceee8f5b7">
+      <sDescription>K-Control Mini PWM LED Controls.
+
+NOTE: Can&apos;t use both the Toggle and PWD LED Controls in the same patch for now...</sDescription>
+      <author>Alt Circuits</author>
+      <license>GPL-3.0</license>
+      <inlets>
+         <frac32.positive name="R"/>
+         <frac32.positive name="G"/>
+         <frac32.positive name="B"/>
+         <frac32.positive name="BlueButton"/>
+         <frac32.positive name="OrangeButton"/>
+      </inlets>
+      <outlets/>
+      <displays/>
+      <params/>
+      <attribs/>
+      <depends>
+         <depend>PWMD1</depend>
+         <depend>PWMD2</depend>
+         <depend>PWMD3</depend>
+         <depend>PWMD4</depend>
+         <depend>PWMD5</depend>
+         <depend>PWMD8</depend>
+      </depends>
+      <code.init><![CDATA[#ifndef ALTCIRCUITS_USING_PWM_LEDS
+#define ALTCIRCUITS_USING_PWM_LEDS
+#endif
+#ifdef ALTCIRCUITS_USING_TOGGLE_LEDS
+#error "Can't use both the Toggle and PWD LED Controls in the same patch for now..."
+#endif
+
+static const PWMConfig pwmcfg = {400000, /* 400kHz PWM clock frequency. */
+	4096, /* PWM period is 128 cycles. */
+	NULL, 
+	{{PWM_OUTPUT_ACTIVE_HIGH, NULL}, 
+	{PWM_OUTPUT_ACTIVE_HIGH, NULL},
+	{PWM_OUTPUT_ACTIVE_HIGH, NULL}, 
+	{PWM_OUTPUT_ACTIVE_HIGH, NULL}},
+	/* HW dependent part.*/
+	0};
+
+pwmStart(&PWMD2, &pwmcfg);
+pwmStart(&PWMD3, &pwmcfg);
+pwmStart(&PWMD4, &pwmcfg);
+pwmStart(&PWMD8, &pwmcfg);
+
+palSetPadMode(GPIOA, 5, PAL_MODE_ALTERNATE(1));
+palSetPadMode(GPIOA, 6, PAL_MODE_ALTERNATE(2));
+palSetPadMode(GPIOA, 7, PAL_MODE_ALTERNATE(2));
+palSetPadMode(GPIOB, 7, PAL_MODE_ALTERNATE(2));
+palSetPadMode(GPIOC, 7, PAL_MODE_ALTERNATE(3));]]></code.init>
+      <code.krate><![CDATA[pwmEnableChannel(&PWMD2, 0, (pwmcnt_t)(inlet_G>=0?inlet_G>>15:0));
+pwmEnableChannel(&PWMD3, 0, (pwmcnt_t)(inlet_B>=0?inlet_B>>15:0));
+pwmEnableChannel(&PWMD3, 1, (pwmcnt_t)(inlet_R>=0?inlet_R>>15:0));
+pwmEnableChannel(&PWMD4, 1, (pwmcnt_t)(inlet_BlueButton>=0?inlet_BlueButton>>15:0));
+pwmEnableChannel(&PWMD8, 1, (pwmcnt_t)(inlet_OrangeButton>=0?inlet_OrangeButton>>15:0));]]></code.krate>
+   </obj.normal>
+</objdefs>

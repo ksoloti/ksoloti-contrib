@@ -1,0 +1,65 @@
+<objdefs appVersion="1.0.12">
+   <obj.normal id="inputs" uuid="2e243b7c-ee75-4e46-9d1a-38fbfd6d67b0">
+      <sDescription>K-Control Mini input controls. Three regular Pots, a center detent trimmer pot and two buttons.</sDescription>
+      <author>Alt Circuits</author>
+      <license>GPL-3.0</license>
+      <inlets/>
+      <outlets>
+         <frac32.positive name="PA0"/>
+         <frac32.positive name="PA1"/>
+         <frac32.positive name="PA2"/>
+         <frac32.bipolar name="PA3"/>
+         <bool32 name="ButtonPA9"/>
+         <bool32 name="ButtonPC1"/>
+      </outlets>
+      <displays>
+         <frac32.u.dial name="PA0"/>
+         <frac32.u.dial name="PA1"/>
+         <frac32.u.dial name="PA2"/>
+         <frac32.s.dial name="PA3"/>
+         <bool32 name="ButtonPA9"/>
+         <bool32 name="ButtonPC1"/>
+      </displays>
+      <params/>
+      <attribs/>
+      <code.declaration><![CDATA[static const unsigned int SIZE = 4;
+static const int32_t F_FREQ = 1 << 23;
+int32_t o[SIZE];
+int32_t btn1,btn2;]]></code.declaration>
+      <code.init><![CDATA[int i;
+for(i=0;i<SIZE;i++)
+{
+	o[i] = 0;
+}
+
+palSetPadMode(GPIOA,9,PAL_MODE_INPUT_PULLDOWN);
+palSetPadMode(GPIOC,1,PAL_MODE_INPUT_PULLDOWN);]]></code.init>
+      <code.krate><![CDATA[int i=0;
+for(int i=0;i<3;i++) 
+{
+	o[i] = ___SMMLA(((adcvalues[i] <<15 )-o[i])<<1,F_FREQ,o[i]);
+}
+
+o[3] = (adcvalues[3] << 16) - (1 << 27);
+o[3] = ___SMMLA(((adcvalues[3] <<16 )-(1 << 27))<<1,F_FREQ,o[3]);
+
+btn1 = palReadPad(GPIOA,9)<<27;
+btn2 = palReadPad(GPIOC,1)<<27;
+
+outlet_PA0 = o[0];
+outlet_PA1 = o[1];
+outlet_PA2 = o[2];
+outlet_PA3 = o[3];
+
+disp_PA0 = o[0];
+disp_PA1 = o[1];
+disp_PA2 = o[2];
+disp_PA3 = o[3];
+
+disp_ButtonPA9 = btn1;
+disp_ButtonPC1 = btn2;
+
+outlet_ButtonPA9 = btn1;
+outlet_ButtonPC1 = btn2;]]></code.krate>
+   </obj.normal>
+</objdefs>
