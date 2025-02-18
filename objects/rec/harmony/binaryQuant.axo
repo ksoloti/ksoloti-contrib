@@ -1,6 +1,6 @@
 <objdefs appVersion="1.0.12">
    <obj.normal id="binaryQuant" uuid="7e8bf3d6-b685-43ec-b5d3-3d4db2a3a8f8">
-      <sDescription>quantize note input to a scale where scale is specified by 12 boolean inputs</sDescription>
+      <sDescription>quantize note input to a scale where scale is specified by 12 boolean inputs, modified from a773/quantizer</sDescription>
       <author>Reductionist Earth Catalog</author>
       <license>GPL</license>
       <helpPatch>harmony.axh</helpPatch>
