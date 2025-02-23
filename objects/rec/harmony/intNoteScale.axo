@@ -1,6 +1,6 @@
 <objdefs appVersion="1.0.12">
    <obj.normal id="intNoteScale" uuid="939e3abc-1ecc-4805-b0b4-e4ab24e9ec80">
-      <sDescription>12 bit integer defines a scale (where 1s of binary string are allowed notes), note number and octave inputs are converted to a fractional note output, modified from harmony/note scale
+      <sDescription>12 bit integer defines a scale (where 1s of binary string are allowed notes), note number and octave inputs are converted to a fractional note output, modified from harmony/note scale</sDescription>
       <author>Reductionist Earth Catalog</author>
       <license>BSD</license>
       <helpPatch>harmony.axh</helpPatch>
