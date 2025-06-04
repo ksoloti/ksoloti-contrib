@@ -2,7 +2,24 @@
 
 #include "hal/lib/streams/chprintf.h"
 
+// syncronization
+//
+// 1. Currently based on events per channel, cannot use burst, non efficient gpio
+// 2. Counting based, wait for all output channels to be set then fire event, good sync (read 333us behind), can use burst, efficient gpio
+//
+// Also look at async rather than sync as the CS is held open for a long time for some reason.
+// Contextual burst should be used for ADC and DAC channels, need to start at first of each
+// Lazy read/write of both gpio registers or based on config. 
 
+// Set to 0 for event based on channels, 1 for counting based
+#define COUNTING_BASED 1
+
+#if COUNTING_BASED
+	#define PROCESS_EVENT                 EVENT_MASK(0)
+	#define PROCESS_EVENT_OUTPUT          EVENT_MASK(1)
+	#define PROCESS_EVENT_INPUT           EVENT_MASK(2)
+	#define PROCESS_EVENT_EXIT            EVENT_MASK(20)
+#endif
 namespace MAX11300
 {
 typedef enum
@@ -189,6 +206,18 @@ bool bADCInitialised = false;
 bool bConfigurationNeeded = false;
 bool bSPIError = false;
 
+uint16_t uInChannelCount = 0;
+uint16_t uOutChannelCount = 0;
+
+uint16_t uInStartChannel = 0;
+uint16_t uOutStartChannel = 0;
+
+uint16_t uOutChannelsSet = 0;
+uint16_t uInChannelsRead = 0;
+
+bool bGpioOutUsed = false;
+bool bGpioInUsed = false;
+
 
 char ChannelInfo::m_sStatusBuffer[64];
 const char * const ChannelInfo::m_sChannelType[] = { "HiZ", "GPI", "?", "GPO", "?", "DAC", "?", "ADC"};
@@ -281,62 +310,109 @@ void spi_error_cb(SPIDriver *spip)
 
 bool SetAnalogOutputChannel(uint8_t uChannel, VoltageRange voltageRange)
 {
+	bool bResult = false;
+
 	if(uChannel < CHANNEL_COUNT)
   {
-    bConfigurationNeeded = true;
-		return channels[uChannel].SetChannelInfo(chDAC, voltageRange);
+		if(bResult = channels[uChannel].SetChannelInfo(chDAC, voltageRange))
+		{
+	    bConfigurationNeeded = true;
+			uOutChannelCount++;
+		}
   }
-	else
-		return false;
+	
+	return bResult;
 }
 
 bool SetDigitalOutputChannel(uint8_t uChannel, LogicLevel logicLevel)
 {
+	bool bResult = false;
+
 	if(uChannel < CHANNEL_COUNT)
 	{
-    bConfigurationNeeded = true;
 		uint16_t uVoltageLevel = (logicLevel == ll3_3v) ? V3_3 : V5;
-		return channels[uChannel].SetChannelInfo(chGPO, vr0toP10, as1, uVoltageLevel, logicLevel);
+		if(bResult = channels[uChannel].SetChannelInfo(chGPO, vr0toP10, as1, uVoltageLevel, logicLevel))
+		{
+	    bConfigurationNeeded = true;
+			uOutChannelCount++;
+		}
 	}
-	else
-		return false;
+
+	return bResult;
 }
 
 bool SetAnalogInputChannel(uint8_t uChannel, VoltageRange voltageRange, ADCSamples adcSamples = as1)
 {
+	bool bResult = false;
+
 	if(uChannel < CHANNEL_COUNT)
   {
-    bConfigurationNeeded = true;
-		return channels[uChannel].SetChannelInfo(chADC, voltageRange, adcSamples);
+		if(bResult = channels[uChannel].SetChannelInfo(chADC, voltageRange, adcSamples))
+		{
+	    bConfigurationNeeded = true;
+			uInChannelCount ++;
+		}
   }
-	else
-		return false;
+
+	return bResult;
 }
 
 bool SetDigitalInputChannel(uint8_t uChannel, LogicLevel logicLevel)
 {
+	bool bResult = false;
+
 	if(uChannel < CHANNEL_COUNT)
 	{
-    bConfigurationNeeded = true;
-		uint16_t uVoltageLevel = (logicLevel == ll3_3v) ? V3 : V4_7;
+  	uint16_t uVoltageLevel = (logicLevel == ll3_3v) ? V3 : V4_7;
 
-		return channels[uChannel].SetChannelInfo(chGPI, vr0toP10, as1, uVoltageLevel, logicLevel);
+		if(bResult ==channels[uChannel].SetChannelInfo(chGPI, vr0toP10, as1, uVoltageLevel, logicLevel))
+		{
+		  bConfigurationNeeded = true;
+			uInChannelCount ++;
+		}
 	}
-	else
-		return false;
+
+	return bResult;
 }
 
+#if COUNTING_BASED
+void TriggerOutputProcessIfNeeded(void)
+{
+		uOutChannelsSet++;
+		if(uOutChannelsSet >= uOutChannelCount)
+		{
+			uOutChannelsSet = 0;
+		  chEvtSignal(pProcessThread, ((eventmask_t)PROCESS_EVENT_OUTPUT));
+		}
+}
+
+void TriggerInputProcessIfNeeded(void)
+{
+		uInChannelsRead++;
+		if(uInChannelsRead >= uInChannelCount)
+		{
+			uInChannelsRead = 0;
+		  chEvtSignal(pProcessThread, ((eventmask_t)PROCESS_EVENT_INPUT));
+		}
+}
+#else
 void TriggerProcess(uint8_t uChannel)
 {
   chEvtSignal(pProcessThread, ((eventmask_t)1)<<uChannel);
 }
+#endif
+
 
 void SetDigitalValue(uint8_t uChannel, bool bValue)
 {
 	if(uChannel < CHANNEL_COUNT)
 	{
 		channels[uChannel].SetDigitalValue(bValue);
+#if COUNTING_BASED
+		TriggerOutputProcessIfNeeded();
+#else			
 		TriggerProcess(uChannel);
+#endif
 	}
 }
 
@@ -346,7 +422,11 @@ bool GetDigitalValue(uint8_t uChannel)
 	if(uChannel < CHANNEL_COUNT)
 	{
 		bValue = channels[uChannel].GetDigitalValue();
+#if COUNTING_BASED
+		TriggerInputProcessIfNeeded();
+#else					
 		TriggerProcess(uChannel);
+#endif
 	}
 	return bValue;
 }
@@ -356,7 +436,11 @@ void SetAnalogValue(uint8_t uChannel, uint16_t uValue)
 	if(uChannel < CHANNEL_COUNT)
 	{
 		channels[uChannel].SetAnalogValue(uValue);
+#if COUNTING_BASED
+		TriggerOutputProcessIfNeeded();
+#else			
 		TriggerProcess(uChannel);
+#endif
 	}
 }
 
@@ -366,7 +450,11 @@ uint16_t GetAnalogValue(uint8_t uChannel)
 	if(uChannel < CHANNEL_COUNT)
 	{
 		uValue = channels[uChannel].GetAnalogValue();
+#if COUNTING_BASED
+		TriggerInputProcessIfNeeded();
+#else					
 		TriggerProcess(uChannel);
+#endif
 	}
 	return uValue;
 }
@@ -533,22 +621,18 @@ bool Initialise(void)
 			LogTextMessage("Reset failed");
 
 		
-    //Now setup basics on MAX11300
-		uint16_t uControlValue = (!BRST) | THSHDN;
-		LogTextMessage("want  %u", uControlValue);
+    // Now setup basics on MAX11300
+		// We want thermal shutdown THSHDN and also contextual addressing BRST
+		uint16_t uControlValue = BRST | THSHDN;
 		if(WriteRegister(PIXI_DEVICE_CTRL, uControlValue))
 		{
 			chThdSleepMilliseconds(1);
 
-			// enable internal temp sensor
-			// disable series resistor cancelation
-			
+			// enable internal temp sensor and disable series resistor cancelation
 			if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue))
 			{
-				LogTextMessage("Start Init %u", uControlValue);
 				if(WriteRegister( PIXI_DEVICE_CTRL, uControlValue | !RS_CANCEL ))
 				{
-					//LogTextMessage("after RS_CANCEL");
 					// Set int temp hi threshold
 					if(WriteRegister(PIXI_TEMP_INT_HIGH_THRESHOLD, 0x0230 ))    // 70 deg C in .125 steps
 					{
@@ -557,7 +641,6 @@ bool Initialise(void)
 						if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue ))
 						{
 							bInititalised = WriteRegister( PIXI_DEVICE_CTRL, uControlValue | TMPCTLINT | TMPCTLEXT1 | TMPCTLEXT2 );
-							//LogTextMessage("after | TMPCTLINT | TMPCTLEXT1 | TMPCTLEXT2");
 						}
 					}
 				}
@@ -703,6 +786,8 @@ bool ConfigDigitalOutput( uint8_t uChannel, LogicLevel logicLevel )
 					chThdSleepMilliseconds(1);
 					bResult = WriteRegister( PIXI_PORT_CONFIG + uChannel, ( ( (uChannelMode << 12 ) & FUNCID ) | ( (vr0toP10 << 8 ) & FUNCPRM_RANGE ) ) );
 					chThdSleepMilliseconds(1);
+					if(bResult)
+						bGpioOutUsed = true;
 				}
 			}
 		}
@@ -760,6 +845,8 @@ bool ConfigDigitalInput( uint8_t uChannel, LogicLevel logicLevel)
 				{
 					bResult = WriteRegister( PIXI_PORT_CONFIG + uChannel, ( ( (uChannelMode << 12 ) & FUNCID ) | ( (vr0toP10 << 8 ) & FUNCPRM_RANGE ) )  );
 					chThdSleepMilliseconds(1);
+					if(bResult)
+						bGpioOutUsed = true;
 				}
 			}
 		}
@@ -806,6 +893,27 @@ bool ReadDigital(uint8_t uChannel, bool *pbValue)
 
 	return bResult;
 }
+
+#if COUNTING_BASED
+bool ProcessInputChannels(void)
+{
+	bool bResult = false;
+
+	LogTextMessage("ProcessInputChannels");
+
+	return bResult;
+}
+
+bool ProcessOutputChannels(void)
+{
+	bool bResult = false;
+
+	LogTextMessage("ProcessOutputChannels");
+
+	return bResult;
+}
+
+#else // COUNTING_BASED
 
 bool ProcessChannel(uint16_t uChannel)
 {
@@ -855,6 +963,7 @@ bool ProcessChannel(uint16_t uChannel)
 
 	return bResult;
 }
+#endif // COUNTING_BASED
 
 void DebugDump(void)
 {
@@ -890,7 +999,18 @@ msg_t ThreadX()
 					LogTextMessage("Failed to initialise channel %u as %s", u, channels[u].GetStatusString());
 			}
     }
-
+#if COUNTING_BASED
+		if(evt & PROCESS_EVENT_OUTPUT)
+		{
+			ProcessInputChannels();
+		}
+		else if(evt & PROCESS_EVENT_INPUT)
+		{
+			ProcessOutputChannels();
+		}
+		else if(evt & PROCESS_EVENT_EXIT)
+			break;
+#else	// COUNTING_BASED	
     // process the channels
 		for(uint8_t uB =0; uB < 20; uB++)
 		{
@@ -902,6 +1022,7 @@ msg_t ThreadX()
 		// 20th bit is exit
 		if(evt&1)
 			break;
+#endif // COUNTING_BASED
  }
 
   LogTextMessage("MAX11300 thread terminated");
@@ -920,8 +1041,11 @@ void Terminate(void)
 			bTerminated = true;
 
 			// Trigger process loop to exit
+#if COUNTING_BASED
+		  chEvtSignal(pProcessThread, ((eventmask_t)PROCESS_EVENT_EXIT));
+#else	// COUNTING_BASED		
 			TriggerProcess(20);
-
+#endif // COUNTING_BASED
 			chThdTerminate( pProcessThread );
 			chThdWait( pProcessThread );
 		}
@@ -929,52 +1053,5 @@ void Terminate(void)
 	palWritePad(GPIOA, 4, false);
 
 }
-// void ThreadLoop(void)
-// {
-// 	if(!bInititalised)
-// 	{
-// 		printf("Initialising MAX11300\r\n");
-// 		if(Initialise())
-// 		{
-// 			// Now initialise all channels
-// 			for(uint8_t u=0; bInititalised && (u < CHANNEL_COUNT); u++)
-// 			{
-// 				bInititalised = ConfigChannel(u);
-// 				if(bInititalised)
-// 					printf("Initialised channel %u as %s\r\n", u, channels[u].GetStatusString());
-// 				else
-// 					printf("Failed to initialise channel %u as %s\r\n", u, channels[u].GetStatusString());
-// 			}
-// 		}
-// 		else
-// 			printf("Failed to initialise MAX11300\r\n");
-// 	}
-
-
-// 	ConfigDigitalInput(3, ll3_3v);
-
-// 	if(bInititalised)
-// 	{
-// 		// Set some test values
-// 		SetAnalogValue(0, 0xfff);
-// 		SetDigitalValue(2, true);
-
-// 		printf("Initialised MAX11300, now processing...\r\n");
-// 		// Process loop
-// 		uint16_t uCountdown = 100;
-// 		SetAnalogValue(0, 0xfff);
-// 		SetDigitalValue(2, true);
-// 		for(;;)
-// 		{
-// 			uCountdown--;
-
-// 			ProcessChannels();
-// 			if(uCountdown == 0)
-// 				DebugDump();
-// 		}
-// 	}
-// 	else
-// 		printf("MAX11300 setup failed, bailing.\r\n");
-// }
 
 }; // namespace
