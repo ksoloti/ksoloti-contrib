@@ -1,4 +1,5 @@
 <patch-1.0 appVersion="1.1.0">
+   <comment type="patch/comment" x="56" y="0" text="&lt;html&gt;&lt;div width=560px align=center&gt;&lt;h1&gt;Analog input and output"/>
    <obj type="lfo/sine" uuid="75f7330c26a13953215dccc3b7b9008545c9daa9" name="sine_1" x="56" y="42">
       <params>
          <frac32.s.map name="pitch" value="49.0"/>
@@ -31,6 +32,8 @@
       <params/>
       <attribs/>
    </obj>
+   <comment type="patch/comment" x="56" y="140" text="Connect a jumper write between ports 0 and 1"/>
+   <comment type="patch/comment" x="56" y="308" text="&lt;html&gt;&lt;div width=390px align=center&gt;&lt;h1&gt;Digital input and output"/>
    <obj type="lfo/square" uuid="de6909eb64db13af5b43f979a4c130024b3a4793" name="square_1" x="56" y="350">
       <params>
          <frac32.s.map name="pitch" value="47.0"/>
@@ -55,6 +58,7 @@
       <params/>
       <attribs/>
    </obj>
+   <comment type="patch/comment" x="56" y="462" text="Connect a jumper write between ports 2 and 3"/>
    <nets>
       <net>
          <source obj="sine_1" outlet="wave"/>
@@ -86,9 +90,9 @@
    </settings>
    <notes><![CDATA[]]></notes>
    <windowPos>
-      <x>145</x>
-      <y>443</y>
-      <width>1248</width>
+      <x>701</x>
+      <y>553</y>
+      <width>1843</width>
       <height>761</height>
    </windowPos>
 </patch-1.0>
