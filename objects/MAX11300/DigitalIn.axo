@@ -1,27 +1,25 @@
 <objdefs appVersion="1.1.0">
-   <obj.normal id="AnalogIn" uuid="1909fd91-d990-49d4-af9b-9cbe8d128922">
-      <sDescription>AnalogIn</sDescription>
+   <obj.normal id="DigitalIn" uuid="AnalogIn.axo">
+      <sDescription>DigitalIn</sDescription>
       <author>AndyCap</author>
       <license>GPL</license>
       <helpPatch>MAX11300.axh</helpPatch>
       <inlets/>
       <outlets>
-         <frac32 name="out1"/>
+         <bool32 name="out1"/>
       </outlets>
       <displays/>
       <params/>
       <attribs>
          <spinner name="channel" MinValue="0" MaxValue="19" DefaultValue="0"/>
-         <combo name="range">
+         <combo name="level">
             <MenuEntries>
-               <string>0v to 10v</string>
-               <string>-5V to 5V</string>
-               <string>-10V to 0V</string>
+               <string>3.3v</string>
+               <string>5V</string>
             </MenuEntries>
             <CEntries>
-               <string>MAX11300::vr0toP10</string>
-               <string>MAX11300::vrN5toP5</string>
-               <string>MAX11300::vrN10to0</string>
+               <string>MAX11300::ll3_3v</string>
+               <string>MAX11300::ll5v</string>
             </CEntries>
          </combo>
       </attribs>
@@ -31,9 +29,9 @@
       <depends>
          <depend>SPID3</depend>
       </depends>
-      <code.init><![CDATA[MAX11300::SetAnalogInputChannel(attr_channel, attr_range);
+      <code.init><![CDATA[MAX11300::SetDigitalInputChannel(attr_channel, attr_level);
 MAX11300::Initialise();]]></code.init>
       <code.dispose><![CDATA[MAX11300::Terminate();]]></code.dispose>
-      <code.krate><![CDATA[outlet_out1 = MAX11300::GetAnalogValue(attr_channel) << 15;]]></code.krate>
+      <code.krate><![CDATA[outlet_out1 = MAX11300::GetDigitalValue(attr_channel);]]></code.krate>
    </obj.normal>
 </objdefs>

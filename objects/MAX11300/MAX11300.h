@@ -328,7 +328,7 @@ bool SetDigitalInputChannel(uint8_t uChannel, LogicLevel logicLevel)
 
 void TriggerProcess(uint8_t uChannel)
 {
-  chEvtSignal(pProcessThread, (eventmask_t)1<<uChannel);
+  chEvtSignal(pProcessThread, ((eventmask_t)1)<<uChannel);
 }
 
 void SetDigitalValue(uint8_t uChannel, bool bValue)
@@ -338,6 +338,17 @@ void SetDigitalValue(uint8_t uChannel, bool bValue)
 		channels[uChannel].SetDigitalValue(bValue);
 		TriggerProcess(uChannel);
 	}
+}
+
+bool GetDigitalValue(uint8_t uChannel)
+{
+	bool bValue = false;
+	if(uChannel < CHANNEL_COUNT)
+	{
+		bValue = channels[uChannel].GetDigitalValue();
+		TriggerProcess(uChannel);
+	}
+	return bValue;
 }
 
 void SetAnalogValue(uint8_t uChannel, uint16_t uValue)
@@ -631,7 +642,7 @@ bool ConfigChannel(uint8_t uChannel)
 			{
 				uint32_t uConfigReg = ( ( (channel.GetChannelType() << 12 ) & FUNCID ) | ( (channel.GetVoltageRange() << 8 ) & FUNCPRM_RANGE ) ) | (channel.GetSamples()<<5) ;
 				bResult = WriteRegister( PIXI_PORT_CONFIG + uChannel, uConfigReg);
-				chThdSleepMilliseconds(1);
+				chThdSleepMilliseconds(10);
 			}
 
 			channel.SetInitialised(bResult);
@@ -909,7 +920,7 @@ void Terminate(void)
 			bTerminated = true;
 
 			// Trigger process loop to exit
-			TriggerProcess(1<<20);
+			TriggerProcess(20);
 
 			chThdTerminate( pProcessThread );
 			chThdWait( pProcessThread );
