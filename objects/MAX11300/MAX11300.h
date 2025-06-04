@@ -46,7 +46,8 @@ typedef enum
 typedef enum
 {
 	ll3_3v,
-	ll5v
+	ll5v,
+	ll10v
 } LogicLevel;
 
 typedef enum
@@ -209,8 +210,8 @@ bool bSPIError = false;
 uint16_t uInChannelCount = 0;
 uint16_t uOutChannelCount = 0;
 
-uint16_t uInStartChannel = 0;
-uint16_t uOutStartChannel = 0;
+uint16_t uInStartChannel = 20;
+uint16_t uOutStartChannel = 20;
 
 uint16_t uOutChannelsSet = 0;
 uint16_t uInChannelsRead = 0;
@@ -218,12 +219,15 @@ uint16_t uInChannelsRead = 0;
 bool bGpioOutUsed = false;
 bool bGpioInUsed = false;
 
+uint32_t uGpioOut = 0;
+uint32_t uGpioIn = 0;
+
 
 char ChannelInfo::m_sStatusBuffer[64];
 const char * const ChannelInfo::m_sChannelType[] = { "HiZ", "GPI", "?", "GPO", "?", "DAC", "?", "ADC"};
 const char * const ChannelInfo::m_sVoltageRange[] = { "?", "0V -> +10V", "-5V -> +5V", "-10V -> 0V", "0V -> 2.5V"};
 const char * const ChannelInfo::m_sSamples[] = { "1 Sample", "2 Samples", "4 Samples", "8 Samples", "16 Samples", "32 Samples", "64 Samples", "128 Samples"};
-const char * const ChannelInfo::m_sLogicLevel[] = { "3.3V", "5V"};
+const char * const ChannelInfo::m_sLogicLevel[] = { "3.3V", "5V", "10V"};
 
 ChannelInfo channels[CHANNEL_COUNT];
 #if BOARD_KSOLOTI_CORE_H743 || BOARD_KSOLOTI_CORE_F427
@@ -302,10 +306,6 @@ void spi_error_cb(SPIDriver *spip)
 #define GPO_DAT_15_0				0x0D
 #define GPO_DAT_19_16				0x0E
 
-#define V3	  							0x04cc
-#define V3_3								0x0547
-#define V4_7								0x0547
-#define V5									0x0785
 
 
 bool SetAnalogOutputChannel(uint8_t uChannel, VoltageRange voltageRange)
@@ -316,6 +316,9 @@ bool SetAnalogOutputChannel(uint8_t uChannel, VoltageRange voltageRange)
   {
 		if(bResult = channels[uChannel].SetChannelInfo(chDAC, voltageRange))
 		{
+			if(uChannel < uOutStartChannel)
+				uOutStartChannel = uChannel;
+
 	    bConfigurationNeeded = true;
 			uOutChannelCount++;
 		}
@@ -324,13 +327,34 @@ bool SetAnalogOutputChannel(uint8_t uChannel, VoltageRange voltageRange)
 	return bResult;
 }
 
+uint16_t GetVoltageOutputLevel(LogicLevel logicLevel)
+{
+	uint16_t uVoltageLevel = 0;
+	switch(logicLevel)
+	{
+		case ll3_3v: uVoltageLevel = 1351; break;
+		case ll5v:   uVoltageLevel = 2047; break;
+		case ll10v:  uVoltageLevel = 4095; break;
+	}
+	LogTextMessage("GetVoltageOutputLevel() = %u",uVoltageLevel);
+	return uVoltageLevel;
+}
+
+uint16_t GetVoltageTriggerLevel(void)
+{
+	// As far as I can work out the maximum trigger is 2.5v which I am guessing is 4095
+	// seems to work anyway!
+	return 4095;
+}
+
+
 bool SetDigitalOutputChannel(uint8_t uChannel, LogicLevel logicLevel)
 {
 	bool bResult = false;
 
 	if(uChannel < CHANNEL_COUNT)
 	{
-		uint16_t uVoltageLevel = (logicLevel == ll3_3v) ? V3_3 : V5;
+		uint16_t uVoltageLevel = GetVoltageOutputLevel(logicLevel);
 		if(bResult = channels[uChannel].SetChannelInfo(chGPO, vr0toP10, as1, uVoltageLevel, logicLevel))
 		{
 	    bConfigurationNeeded = true;
@@ -349,7 +373,10 @@ bool SetAnalogInputChannel(uint8_t uChannel, VoltageRange voltageRange, ADCSampl
   {
 		if(bResult = channels[uChannel].SetChannelInfo(chADC, voltageRange, adcSamples))
 		{
-	    bConfigurationNeeded = true;
+			if(uChannel < uInStartChannel)
+				uInStartChannel = uChannel;
+
+			bConfigurationNeeded = true;
 			uInChannelCount ++;
 		}
   }
@@ -357,15 +384,15 @@ bool SetAnalogInputChannel(uint8_t uChannel, VoltageRange voltageRange, ADCSampl
 	return bResult;
 }
 
-bool SetDigitalInputChannel(uint8_t uChannel, LogicLevel logicLevel)
+bool SetDigitalInputChannel(uint8_t uChannel)
 {
 	bool bResult = false;
 
 	if(uChannel < CHANNEL_COUNT)
 	{
-  	uint16_t uVoltageLevel = (logicLevel == ll3_3v) ? V3 : V4_7;
+  	uint16_t uVoltageLevel = GetVoltageTriggerLevel();
 
-		if(bResult ==channels[uChannel].SetChannelInfo(chGPI, vr0toP10, as1, uVoltageLevel, logicLevel))
+		if(bResult ==channels[uChannel].SetChannelInfo(chGPI, vr0toP10, as1, uVoltageLevel, ll3_3v))
 		{
 		  bConfigurationNeeded = true;
 			uInChannelCount ++;
@@ -409,6 +436,13 @@ void SetDigitalValue(uint8_t uChannel, bool bValue)
 	{
 		channels[uChannel].SetDigitalValue(bValue);
 #if COUNTING_BASED
+		if(bValue)
+			uGpioOut |= (uint32_t)1<<uChannel;
+		else
+			uGpioOut &= ~(uint32_t)1<<uChannel;
+
+		//LogTextMessage("[%u] = %u, %x", uChannel, bValue, uGpioOut);
+
 		TriggerOutputProcessIfNeeded();
 #else			
 		TriggerProcess(uChannel);
@@ -421,10 +455,11 @@ bool GetDigitalValue(uint8_t uChannel)
 	bool bValue = false;
 	if(uChannel < CHANNEL_COUNT)
 	{
-		bValue = channels[uChannel].GetDigitalValue();
 #if COUNTING_BASED
+		bValue = (uGpioIn >> uChannel) & 1;
 		TriggerInputProcessIfNeeded();
 #else					
+		bValue = channels[uChannel].GetDigitalValue();
 		TriggerProcess(uChannel);
 #endif
 	}
@@ -486,14 +521,14 @@ bool SpiTransmitReceive(uint16_t uSize)
   spiExchange(&SPID3, uSize, txbuf, rxbuf);
   spiUnselect(&SPID3);
 
-	// LogTextMessage("tx %x, %x, %x", txbuf[0],txbuf[1],txbuf[2]);
-	// LogTextMessage("rx %x, %x, %x", rxbuf[0],rxbuf[1],rxbuf[2]);
+	//LogTextMessage("r tx %x, %x, %x", txbuf[0],txbuf[1],txbuf[2]);
+	//LogTextMessage("r rx %x, %x, %x", rxbuf[0],rxbuf[1],rxbuf[2]);
 
 	if(bSPIError)
 	{
 		LogTextMessage("SpiTransmitReceive bSPIError = %u", bSPIError);
-		LogTextMessage("tx %x, %x, %x", txbuf[0],txbuf[1],txbuf[2]);
-		LogTextMessage("rx %x, %x, %x", rxbuf[0],rxbuf[1],rxbuf[2]);
+		LogTextMessage("r tx %x, %x, %x", txbuf[0],txbuf[1],txbuf[2]);
+		LogTextMessage("r rx %x, %x, %x", rxbuf[0],rxbuf[1],rxbuf[2]);
 	}
 	return !bSPIError;
 }
@@ -522,14 +557,56 @@ bool ReadRegister(uint8_t uAddress, uint16_t *puValue)
 	return bResult;
 }
 
+bool ReadDoubleRegister(uint8_t uAddress, uint32_t *puValue)
+{
+	bool bResult = false;
+
+  txbuf[0] = MAX11300Addr_SPI_Read(uAddress);
+  txbuf[1] = 0xFF;
+  txbuf[2] = 0xFF;
+  txbuf[3] = 0xFF;
+  txbuf[4] = 0xFF;
+  
+  rxbuf[0] = 0;
+  rxbuf[1] = 0;
+  rxbuf[2] = 0;
+  rxbuf[3] = 0;
+  rxbuf[4] = 0;
+  
+	bResult = SpiTransmitReceive(5);
+
+	if(bResult)
+	{
+		uint32_t value = (rxbuf[1]<<8) | rxbuf[2] | rxbuf[3]<<24 | rxbuf[4]<<16;
+		//LogTextMessage("%x from %x, %x, %x, %x, %x", value, rxbuf[0],rxbuf[1],rxbuf[2],rxbuf[3],rxbuf[4]);
+		*puValue = value;
+	}
+
+	return bResult;
+}
+
 bool WriteRegister(uint8_t uAddress, const uint16_t uValue)
 {
 	txbuf[0] = MAX11300Addr_SPI_Write(uAddress);
 	txbuf[1] = (uValue) >> 8;
 	txbuf[2] = (uValue) & 0xFF;
 
-	// LogTextMessage("tx %x, %x, %x", txbuf[0],txbuf[1],txbuf[2]);
+	//LogTextMessage("tx %x, %x, %x", txbuf[0],txbuf[1],txbuf[2]);
 	bool bResult = SpiTransmit(3);
+
+	return bResult;
+}
+
+bool WriteDoubleRegister(uint8_t uAddress, const uint32_t uValue)
+{
+	txbuf[0] = MAX11300Addr_SPI_Write(uAddress);
+	txbuf[1] = (uValue >> 8) & 0xFF;
+	txbuf[2] = uValue & 0xFF;
+	txbuf[3] = (uValue >> 24) & 0xFF;
+	txbuf[4] = (uValue >> 16) & 0xFF;
+
+	//LogTextMessage("tx %x, %x, %x", txbuf[0],txbuf[1],txbuf[2]);
+	bool bResult = SpiTransmit(5);
 
 	return bResult;
 }
@@ -710,6 +787,14 @@ bool ConfigChannel(uint8_t uChannel)
 		{
 			bResult = true;
 
+			if(channel.IsDigital())
+			{
+				if(channel.IsInput())
+					bGpioInUsed = true;
+				else
+					bGpioOutUsed = true;
+			}
+
 			// Initialise DAC and ADC if needed
 			if(channel.UsesADC())
 				bResult = ConfigADC();
@@ -735,125 +820,126 @@ bool ConfigChannel(uint8_t uChannel)
 	return bResult;
 }
 
-bool ConfigAnalogOutput( uint8_t uChannel, VoltageRange voltageRange )
-{
-	bool bResult = false;
+// bool ConfigAnalogOutput( uint8_t uChannel, VoltageRange voltageRange )
+// {
+// 	bool bResult = false;
 
-	uint8_t uChannelMode = CH_MODE_DAC; // CH_MODE_5
+// 	uint8_t uChannelMode = CH_MODE_DAC; // CH_MODE_5
 
-	uint16_t uControlValue = 0;
+// 	uint16_t uControlValue = 0;
 
-	if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue))
-	{
-		if(WriteRegister( PIXI_DEVICE_CTRL, uControlValue | DACREF | !DACCTL ))
-		{
-			chThdSleepMilliseconds(1);
-			if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue)) // ??
-			{
-				// Enter DACDAT
-				if(WriteRegister( PIXI_DAC_DATA + uChannel, 0))
-				{
-					chThdSleepMilliseconds(1);
-					bResult = WriteRegister( PIXI_PORT_CONFIG + uChannel, ( ( (uChannelMode << 12 ) & FUNCID ) | ( (voltageRange << 8 ) & FUNCPRM_RANGE ) ) );
-					chThdSleepMilliseconds(1);
-				}
-			}
-		}
-	}
+// 	if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue))
+// 	{
+// 		if(WriteRegister( PIXI_DEVICE_CTRL, uControlValue | DACREF | !DACCTL ))
+// 		{
+// 			chThdSleepMilliseconds(1);
+// 			if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue)) // ??
+// 			{
+// 				// Enter DACDAT
+// 				if(WriteRegister( PIXI_DAC_DATA + uChannel, 0))
+// 				{
+// 					chThdSleepMilliseconds(1);
+// 					bResult = WriteRegister( PIXI_PORT_CONFIG + uChannel, ( ( (uChannelMode << 12 ) & FUNCID ) | ( (voltageRange << 8 ) & FUNCPRM_RANGE ) ) );
+// 					chThdSleepMilliseconds(1);
+// 				}
+// 			}
+// 		}
+// 	}
 
-	return (bResult);
-}
+// 	return (bResult);
+// }
 
-bool ConfigDigitalOutput( uint8_t uChannel, LogicLevel logicLevel )
-{
-	bool bResult = false;
+// bool ConfigDigitalOutput( uint8_t uChannel, LogicLevel logicLevel )
+// {
+// 	bool bResult = false;
 
-	uint8_t uChannelMode = CH_MODE_GPO; // CH_MODE_3
+// 	uint8_t uChannelMode = CH_MODE_GPO; // CH_MODE_3
 
-	uint16_t uControlValue = 0;
+// 	uint16_t uControlValue = 0;
 
-	if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue))
-	{
-		if(WriteRegister( PIXI_DEVICE_CTRL, uControlValue | DACREF | !DACCTL ))
-		{
-			chThdSleepMilliseconds(1);
-			if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue)) // ??
-			{
-				// Enter DACDAT
-				uint32_t uVolts = (logicLevel == ll3_3v) ? V3_3 : V5;
-				if(WriteRegister( PIXI_DAC_DATA + uChannel, uVolts))
-				{
-					chThdSleepMilliseconds(1);
-					bResult = WriteRegister( PIXI_PORT_CONFIG + uChannel, ( ( (uChannelMode << 12 ) & FUNCID ) | ( (vr0toP10 << 8 ) & FUNCPRM_RANGE ) ) );
-					chThdSleepMilliseconds(1);
-					if(bResult)
-						bGpioOutUsed = true;
-				}
-			}
-		}
-	}
+// 	if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue))
+// 	{
+// 		if(WriteRegister( PIXI_DEVICE_CTRL, uControlValue | DACREF | !DACCTL ))
+// 		{
+// 			chThdSleepMilliseconds(1);
+// 			if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue)) // ??
+// 			{
+// 				// Enter DACDAT
+// 				uint32_t uVolts = GetVoltageOutputLevel(logicLevel);
+// 				if(WriteRegister( PIXI_DAC_DATA + uChannel, uVolts))
+// 				{
+// 					chThdSleepMilliseconds(1);
+// 					bResult = WriteRegister( PIXI_PORT_CONFIG + uChannel, ( ( (uChannelMode << 12 ) & FUNCID ) | ( (vr0toP10 << 8 ) & FUNCPRM_RANGE ) ) );
+// 					chThdSleepMilliseconds(1);
+// 					if(bResult)
+// 						bGpioOutUsed = true;
+// 				}
+// 			}
+// 		}
+// 	}
 
-	return (bResult);
-}
-
-
-bool ConfigAnalogInput( uint8_t uChannel, VoltageRange voltageRange, ADCSamples samples )
-{
-	bool bResult = false;
-
-	uint8_t uChannelMode = CH_MODE_ADC; // CH_MODE_7
-
-	uint16_t uControlValue = 0;
-
-	if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue))
-	{
-		if(WriteRegister( PIXI_DEVICE_CTRL, uControlValue | ADCCTL ))
-		{
-			chThdSleepMilliseconds(1);
-			if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue)) // ??
-			{
-				bResult = WriteRegister( PIXI_PORT_CONFIG + uChannel, ( ( (uChannelMode << 12 ) & FUNCID ) | ( (voltageRange << 8 ) & FUNCPRM_RANGE ) ) | (samples<<5) );
-				chThdSleepMilliseconds(1);
-			}
-		}
-	}
-
-	return (bResult);
-}
+// 	return (bResult);
+// }
 
 
-bool ConfigDigitalInput( uint8_t uChannel, LogicLevel logicLevel)
-{
-	bool bResult = false;
+// bool ConfigAnalogInput( uint8_t uChannel, VoltageRange voltageRange, ADCSamples samples )
+// {
+// 	bool bResult = false;
 
-	uint8_t uChannelMode = CH_MODE_GPI; // CH_MODE_1
+// 	uint8_t uChannelMode = CH_MODE_ADC; // CH_MODE_7
 
-	uint16_t uControlValue = 0;
+// 	uint16_t uControlValue = 0;
 
-	if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue))
-	{
-		// Enter ADCDAT
-		uint32_t uVolts = (logicLevel == ll3_3v) ? V3 : V4_7;
-		if(WriteRegister( PIXI_ADC_DATA + uChannel, uVolts))
-		{
-			chThdSleepMilliseconds(1);
+// 	if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue))
+// 	{
+// 		if(WriteRegister( PIXI_DEVICE_CTRL, uControlValue | ADCCTL ))
+// 		{
+// 			chThdSleepMilliseconds(1);
+// 			if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue)) // ??
+// 			{
+// 				bResult = WriteRegister( PIXI_PORT_CONFIG + uChannel, ( ( (uChannelMode << 12 ) & FUNCID ) | ( (voltageRange << 8 ) & FUNCPRM_RANGE ) ) | (samples<<5) );
+// 				chThdSleepMilliseconds(1);
+// 			}
+// 		}
+// 	}
 
-			if(WriteRegister( PIXI_DEVICE_CTRL, uControlValue | ADCCTL ))
-			{
-				chThdSleepMilliseconds(1);
-				if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue)) // ??
-				{
-					bResult = WriteRegister( PIXI_PORT_CONFIG + uChannel, ( ( (uChannelMode << 12 ) & FUNCID ) | ( (vr0toP10 << 8 ) & FUNCPRM_RANGE ) )  );
-					chThdSleepMilliseconds(1);
-					if(bResult)
-						bGpioOutUsed = true;
-				}
-			}
-		}
-	}
+// 	return (bResult);
+// }
 
-	return (bResult);
-}
+
+// bool ConfigDigitalInput( uint8_t uChannel, LogicLevel logicLevel)
+// {
+// 	bool bResult = false;
+
+// 	uint8_t uChannelMode = CH_MODE_GPI; // CH_MODE_1
+
+// 	uint16_t uControlValue = 0;
+
+// 	if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue))
+// 	{
+// 		// Enter ADCDAT
+// 		uint32_t uVolts = GetVoltageTriggerLevel(logicLevel);
+// 		if(WriteRegister( PIXI_ADC_DATA + uChannel, uVolts))
+// 		{
+// 			chThdSleepMilliseconds(1);
+
+// 			if(WriteRegister( PIXI_DEVICE_CTRL, uControlValue | ADCCTL ))
+// 			{
+// 				chThdSleepMilliseconds(1);
+// 				if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue)) // ??
+// 				{
+// 					bResult = WriteRegister( PIXI_PORT_CONFIG + uChannel, ( ( (uChannelMode << 12 ) & FUNCID ) | ( (vr0toP10 << 8 ) & FUNCPRM_RANGE ) )  );
+// 					chThdSleepMilliseconds(1);
+// 					if(bResult)
+// 						bGpioInUsed = true;
+// 				}
+// 			}
+// 		}
+// 	}
+
+// 	LogTextMessage("ConfigDigitalInput = %u", bResult);
+// 	return (bResult);
+// }
 
 bool WriteAnalog(uint8_t uChannel, uint16_t uValue)
 {
@@ -895,20 +981,24 @@ bool ReadDigital(uint8_t uChannel, bool *pbValue)
 }
 
 #if COUNTING_BASED
-bool ProcessInputChannels(void)
+bool ProcessOutputChannels(void)
 {
+	// First gpio out
 	bool bResult = false;
-
-	LogTextMessage("ProcessInputChannels");
+	
+	if(bGpioOutUsed)
+		bResult = WriteDoubleRegister(GPO_DAT_15_0, uGpioOut);
 
 	return bResult;
 }
 
-bool ProcessOutputChannels(void)
+bool ProcessInputChannels(void)
 {
+	// First gpio in
 	bool bResult = false;
-
-	LogTextMessage("ProcessOutputChannels");
+	
+	if(bGpioInUsed)
+		ReadDoubleRegister(GPI_DAT_15_0, &uGpioIn);
 
 	return bResult;
 }
@@ -979,7 +1069,7 @@ void DebugDump(void)
 msg_t ThreadX()
 {
   LogTextMessage("MAX11300 thread started");
-
+	ClearDigital();
   while ( !chThdShouldTerminate() ) 
   {
     eventmask_t evt = chEvtWaitOne((eventmask_t)ALL_EVENTS);
@@ -1002,11 +1092,11 @@ msg_t ThreadX()
 #if COUNTING_BASED
 		if(evt & PROCESS_EVENT_OUTPUT)
 		{
-			ProcessInputChannels();
+			ProcessOutputChannels();
 		}
 		else if(evt & PROCESS_EVENT_INPUT)
 		{
-			ProcessOutputChannels();
+			ProcessInputChannels();
 		}
 		else if(evt & PROCESS_EVENT_EXIT)
 			break;

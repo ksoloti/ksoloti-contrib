@@ -12,16 +12,6 @@
       <params/>
       <attribs>
          <spinner name="channel" MinValue="0" MaxValue="19" DefaultValue="0"/>
-         <combo name="level">
-            <MenuEntries>
-               <string>3.3v</string>
-               <string>5V</string>
-            </MenuEntries>
-            <CEntries>
-               <string>MAX11300::ll3_3v</string>
-               <string>MAX11300::ll5v</string>
-            </CEntries>
-         </combo>
       </attribs>
       <includes>
          <include>./MAX11300.h</include>
@@ -29,7 +19,7 @@
       <depends>
          <depend>SPID3</depend>
       </depends>
-      <code.init><![CDATA[MAX11300::SetDigitalInputChannel(attr_channel, attr_level);
+      <code.init><![CDATA[MAX11300::SetDigitalInputChannel(attr_channel);
 MAX11300::Initialise();]]></code.init>
       <code.dispose><![CDATA[MAX11300::Terminate();]]></code.dispose>
       <code.krate><![CDATA[outlet_out1 = MAX11300::GetDigitalValue(attr_channel);]]></code.krate>

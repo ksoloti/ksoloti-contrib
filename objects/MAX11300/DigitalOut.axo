@@ -16,10 +16,12 @@
             <MenuEntries>
                <string>3.3v</string>
                <string>5V</string>
+               <string>10V</string>
             </MenuEntries>
             <CEntries>
                <string>MAX11300::ll3_3v</string>
                <string>MAX11300::ll5v</string>
+               <string>MAX11300::ll10v</string>
             </CEntries>
          </combo>
       </attribs>
