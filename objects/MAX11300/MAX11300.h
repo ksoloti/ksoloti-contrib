@@ -231,11 +231,11 @@ const char * const ChannelInfo::m_sLogicLevel[] = { "3.3V", "5V", "10V"};
 
 ChannelInfo channels[CHANNEL_COUNT];
 #if BOARD_KSOLOTI_CORE_H743 || BOARD_KSOLOTI_CORE_F427
-uint8_t txbuf[8] SPILINK_DMA_SECTION;
-uint8_t rxbuf[8] SPILINK_DMA_SECTION;
+uint8_t txbuf[32] SPILINK_DMA_SECTION;
+uint8_t rxbuf[32] SPILINK_DMA_SECTION;
 #else
-uint8_t txbuf[8] __attribute__ ((section (".sram2")));
-uint8_t rxbuf[8] __attribute__ ((section (".sram2")));
+uint8_t txbuf[32] __attribute__ ((section (".sram2")));
+uint8_t rxbuf[32] __attribute__ ((section (".sram2")));
 #endif
 
 void spi_error_cb(SPIDriver *spip) 
@@ -989,6 +989,24 @@ bool ProcessOutputChannels(void)
 	if(bGpioOutUsed)
 		bResult = WriteDoubleRegister(GPO_DAT_15_0, uGpioOut);
 
+	// Now any analog outs, contextual burst
+	if(uOutStartChannel < 20)
+	{
+		txbuf[0] = MAX11300Addr_SPI_Write(PIXI_DAC_DATA + uOutStartChannel);
+		uint8_t uPos = 1;
+		for(uint8_t uC = uOutStartChannel; uC < 20; uC++)
+		{
+			ChannelInfo &channel = channels[uC];
+			if(channel.IsAnalog() && channel.IsOutput())
+			{
+				uint16_t uValue = channel.GetAnalogValue();
+				txbuf[uPos++] = uValue >> 8;
+				txbuf[uPos++] = uValue & 0xFF;
+			}
+		}
+		SpiTransmit(uPos);
+	}
+
 	return bResult;
 }
 
@@ -999,6 +1017,25 @@ bool ProcessInputChannels(void)
 	
 	if(bGpioInUsed)
 		ReadDoubleRegister(GPI_DAT_15_0, &uGpioIn);
+
+	// Now any analog ins, contextual burst
+	if(uInStartChannel < 20)
+	{
+		txbuf[0] = MAX11300Addr_SPI_Read(PIXI_ADC_DATA + uInStartChannel);
+		uint8_t uPos = 1 + (uInChannelCount *2);
+		bResult = SpiTransmitReceive(uPos);
+
+		uPos = 1;
+		for(uint8_t uC = uInStartChannel; uC < 20; uC++)
+		{
+			ChannelInfo &channel = channels[uC];
+			if(channel.IsAnalog() && channel.IsInput())
+			{
+				uint16_t uValue = (rxbuf[uPos++]<<8) | rxbuf[uPos++];
+				channel.SetAnalogValue(uValue);
+			}
+		}
+	}
 
 	return bResult;
 }

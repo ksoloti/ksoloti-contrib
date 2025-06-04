@@ -13,7 +13,7 @@
    <obj type="MAX11300/AnalogOut" uuid="b06b93b3-70c5-47a4-b684-b142743d04ad" name="AnalogOut_1" x="266" y="42">
       <params/>
       <attribs>
-         <spinner attributeName="channel" value="0"/>
+         <spinner attributeName="channel" value="4"/>
          <combo attributeName="range" selection="0v to 10v"/>
       </attribs>
    </obj>
@@ -33,6 +33,8 @@
       <attribs/>
    </obj>
    <comment type="patch/comment" x="56" y="140" text="Connect a jumper write between ports 0 and 1"/>
+   <comment type="patch/comment" x="56" y="154" text="Analog ranges are 0v-10v, -5V to 5V or -10v to 0V"/>
+   <comment type="patch/comment" x="56" y="168" text="Negative values require a negative power supply to the MAX11300"/>
    <comment type="patch/comment" x="56" y="308" text="&lt;html&gt;&lt;div width=390px align=center&gt;&lt;h1&gt;Digital input and output"/>
    <obj type="lfo/square" uuid="de6909eb64db13af5b43f979a4c130024b3a4793" name="square_1" x="56" y="350">
       <params>
@@ -59,6 +61,8 @@
       <attribs/>
    </obj>
    <comment type="patch/comment" x="56" y="462" text="Connect a jumper write between ports 2 and 3"/>
+   <comment type="patch/comment" x="56" y="476" text="Digital output can be set to 3.3V, 5V or 10V"/>
+   <comment type="patch/comment" x="56" y="490" text="Digital input has a trigger level of 2.5V"/>
    <nets>
       <net>
          <source obj="sine_1" outlet="wave"/>
@@ -90,8 +94,8 @@
    </settings>
    <notes><![CDATA[]]></notes>
    <windowPos>
-      <x>145</x>
-      <y>421</y>
+      <x>96</x>
+      <y>517</y>
       <width>870</width>
       <height>695</height>
    </windowPos>
