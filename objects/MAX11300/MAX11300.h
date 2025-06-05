@@ -14,6 +14,16 @@
 // Set to 0 for event based on channels, 1 for counting based
 #define COUNTING_BASED 1
 
+// Set to 1 For Debug messages
+#define DEBUG 0
+
+// Set to 1 For Logic Anylyser
+// GPIOA, 4 = SPI Error
+// GPIOA, 5 = Process Output Channels (COUNTING)
+// GPIOA, 6 = Process Input Channels (COUNTING)
+// GPIOA, 7 = Process Single Channels 
+#define ANALYSER 0
+
 #if COUNTING_BASED
 	#define PROCESS_EVENT                 EVENT_MASK(0)
 	#define PROCESS_EVENT_OUTPUT          EVENT_MASK(1)
@@ -240,14 +250,17 @@ uint8_t rxbuf[32] __attribute__ ((section (".sram2")));
 
 void spi_error_cb(SPIDriver *spip) 
 {
+#if ANALYSER	
 	palWritePad(GPIOA, 4, true);
-	static bool bStop = true;
-	while(bStop)
-		;
+#endif
 
-  LogTextMessage("spi_error_cb");
+  LogTextMessage("MAX11300: SPI Error");
 
   bSPIError = true;
+
+	#if ANALYSER	
+	palWritePad(GPIOA, 4, false);
+#endif
 }
 
 #if BOARD_KSOLOTI_CORE_H743 || BOARD_KSOLOTI_CORE_F427
@@ -336,7 +349,6 @@ uint16_t GetVoltageOutputLevel(LogicLevel logicLevel)
 		case ll5v:   uVoltageLevel = 2047; break;
 		case ll10v:  uVoltageLevel = 4095; break;
 	}
-	LogTextMessage("GetVoltageOutputLevel() = %u",uVoltageLevel);
 	return uVoltageLevel;
 }
 
@@ -441,8 +453,6 @@ void SetDigitalValue(uint8_t uChannel, bool bValue)
 		else
 			uGpioOut &= ~(uint32_t)1<<uChannel;
 
-		//LogTextMessage("[%u] = %u, %x", uChannel, bValue, uGpioOut);
-
 		TriggerOutputProcessIfNeeded();
 #else			
 		TriggerProcess(uChannel);
@@ -502,12 +512,13 @@ bool SpiTransmit(uint16_t uSize)
   spiSend(&SPID3, uSize, txbuf);
   spiUnselect(&SPID3);
 
-	//LogTextMessage("tx %x, %x, %x", txbuf[0],txbuf[1],txbuf[2]);
+#if DEBUG
 	if(bSPIError)
 	{
 		LogTextMessage("SpiTransmit bSPIError = %u", bSPIError);
 		LogTextMessage("tx %x, %x, %x", txbuf[0],txbuf[1],txbuf[2]);
 	}
+#endif
 
 	return !bSPIError;
 }
@@ -521,16 +532,16 @@ bool SpiTransmitReceive(uint16_t uSize)
   spiExchange(&SPID3, uSize, txbuf, rxbuf);
   spiUnselect(&SPID3);
 
-	//LogTextMessage("r tx %x, %x, %x", txbuf[0],txbuf[1],txbuf[2]);
-	//LogTextMessage("r rx %x, %x, %x", rxbuf[0],rxbuf[1],rxbuf[2]);
-
+#if DEBUG
 	if(bSPIError)
 	{
 		LogTextMessage("SpiTransmitReceive bSPIError = %u", bSPIError);
 		LogTextMessage("r tx %x, %x, %x", txbuf[0],txbuf[1],txbuf[2]);
 		LogTextMessage("r rx %x, %x, %x", rxbuf[0],rxbuf[1],rxbuf[2]);
 	}
-	return !bSPIError;
+#endif
+
+return !bSPIError;
 }
 
 
@@ -578,7 +589,6 @@ bool ReadDoubleRegister(uint8_t uAddress, uint32_t *puValue)
 	if(bResult)
 	{
 		uint32_t value = (rxbuf[1]<<8) | rxbuf[2] | rxbuf[3]<<24 | rxbuf[4]<<16;
-		//LogTextMessage("%x from %x, %x, %x, %x, %x", value, rxbuf[0],rxbuf[1],rxbuf[2],rxbuf[3],rxbuf[4]);
 		*puValue = value;
 	}
 
@@ -591,7 +601,6 @@ bool WriteRegister(uint8_t uAddress, const uint16_t uValue)
 	txbuf[1] = (uValue) >> 8;
 	txbuf[2] = (uValue) & 0xFF;
 
-	//LogTextMessage("tx %x, %x, %x", txbuf[0],txbuf[1],txbuf[2]);
 	bool bResult = SpiTransmit(3);
 
 	return bResult;
@@ -605,7 +614,6 @@ bool WriteDoubleRegister(uint8_t uAddress, const uint32_t uValue)
 	txbuf[3] = (uValue >> 24) & 0xFF;
 	txbuf[4] = (uValue >> 16) & 0xFF;
 
-	//LogTextMessage("tx %x, %x, %x", txbuf[0],txbuf[1],txbuf[2]);
 	bool bResult = SpiTransmit(5);
 
 	return bResult;
@@ -652,9 +660,6 @@ bool Initialise(void)
 {
 	if(!bInititalised)
 	{
-		// Just incase we are in flash and board has just powered up
-		//chThdSleepMilliseconds(100);
-
     // First setup SPI3
     palSetPadMode(GPIOA, 15, PAL_MODE_OUTPUT_PUSHPULL); // CS
     palSetPadMode(GPIOB, 3, PAL_MODE_OUTPUT_PUSHPULL); // SCK
@@ -666,6 +671,7 @@ bool Initialise(void)
 
     spiStart(&SPID3, &spi3cfg);
 
+#if ANALYSER	
 		// debug
 		palSetPadMode(GPIOA, 7, PAL_MODE_OUTPUT_PUSHPULL);
 		palSetPadMode(GPIOA, 6, PAL_MODE_OUTPUT_PUSHPULL);
@@ -675,28 +681,16 @@ bool Initialise(void)
 		palWritePad(GPIOA, 6, false);
 		palWritePad(GPIOA, 5, false);
 		palWritePad(GPIOA, 4, false);
+#endif
 
-		// /* SD2 for serial debug output */
-    // palSetPadMode(GPIOA, 3, PAL_MODE_ALTERNATE(7) | PAL_MODE_INPUT); /* RX */
-    // palSetPadMode(GPIOA, 2, PAL_MODE_OUTPUT_PUSHPULL); /* TX */
-    // palSetPadMode(GPIOA, 2, PAL_MODE_ALTERNATE(7)); /* TX */
-
-    // /* 115200 baud */
-    // static const SerialConfig sd2Cfg = {115200, 0, 0, 0};
-    // sdStart(&SD2, &sd2Cfg);
-
-    // LogTextMessage("Debug logging enabled on A2/A3\n");
-
+#if DEBUG		
 		if(IsConnected())
-			LogTextMessage("Connected");
+			LogTextMessage("MAX11300: Connected");
 		else
-			LogTextMessage("Not Connected");
+			LogTextMessage("MAX11300: Not Connected");
+#endif
 
-		if(Reset())
-			LogTextMessage("Reset ok");
-		else
-			LogTextMessage("Reset failed");
-
+		Reset();
 		
     // Now setup basics on MAX11300
 		// We want thermal shutdown THSHDN and also contextual addressing BRST
@@ -729,13 +723,13 @@ bool Initialise(void)
 			uint16_t uControlValue;
 			ReadRegister( PIXI_DEVICE_CTRL, &uControlValue);
 	
-      LogTextMessage("MAX11300 initialised. %x", uControlValue);
+      LogTextMessage("MAX11300: initialised. CR=%x", uControlValue);
 
       // Start thread
       pProcessThread = chThdCreateStatic(waThreadX, sizeof(waThreadX), LOWPRIO, (tfunc_t)ThreadX, nullptr);
     }
     else
-      LogTextMessage("MAX11300 failed to initialise.");
+      LogTextMessage("MAX11300: failed to initialise.");
 	}
 	return bInititalised;
 }
@@ -820,126 +814,6 @@ bool ConfigChannel(uint8_t uChannel)
 	return bResult;
 }
 
-// bool ConfigAnalogOutput( uint8_t uChannel, VoltageRange voltageRange )
-// {
-// 	bool bResult = false;
-
-// 	uint8_t uChannelMode = CH_MODE_DAC; // CH_MODE_5
-
-// 	uint16_t uControlValue = 0;
-
-// 	if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue))
-// 	{
-// 		if(WriteRegister( PIXI_DEVICE_CTRL, uControlValue | DACREF | !DACCTL ))
-// 		{
-// 			chThdSleepMilliseconds(1);
-// 			if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue)) // ??
-// 			{
-// 				// Enter DACDAT
-// 				if(WriteRegister( PIXI_DAC_DATA + uChannel, 0))
-// 				{
-// 					chThdSleepMilliseconds(1);
-// 					bResult = WriteRegister( PIXI_PORT_CONFIG + uChannel, ( ( (uChannelMode << 12 ) & FUNCID ) | ( (voltageRange << 8 ) & FUNCPRM_RANGE ) ) );
-// 					chThdSleepMilliseconds(1);
-// 				}
-// 			}
-// 		}
-// 	}
-
-// 	return (bResult);
-// }
-
-// bool ConfigDigitalOutput( uint8_t uChannel, LogicLevel logicLevel )
-// {
-// 	bool bResult = false;
-
-// 	uint8_t uChannelMode = CH_MODE_GPO; // CH_MODE_3
-
-// 	uint16_t uControlValue = 0;
-
-// 	if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue))
-// 	{
-// 		if(WriteRegister( PIXI_DEVICE_CTRL, uControlValue | DACREF | !DACCTL ))
-// 		{
-// 			chThdSleepMilliseconds(1);
-// 			if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue)) // ??
-// 			{
-// 				// Enter DACDAT
-// 				uint32_t uVolts = GetVoltageOutputLevel(logicLevel);
-// 				if(WriteRegister( PIXI_DAC_DATA + uChannel, uVolts))
-// 				{
-// 					chThdSleepMilliseconds(1);
-// 					bResult = WriteRegister( PIXI_PORT_CONFIG + uChannel, ( ( (uChannelMode << 12 ) & FUNCID ) | ( (vr0toP10 << 8 ) & FUNCPRM_RANGE ) ) );
-// 					chThdSleepMilliseconds(1);
-// 					if(bResult)
-// 						bGpioOutUsed = true;
-// 				}
-// 			}
-// 		}
-// 	}
-
-// 	return (bResult);
-// }
-
-
-// bool ConfigAnalogInput( uint8_t uChannel, VoltageRange voltageRange, ADCSamples samples )
-// {
-// 	bool bResult = false;
-
-// 	uint8_t uChannelMode = CH_MODE_ADC; // CH_MODE_7
-
-// 	uint16_t uControlValue = 0;
-
-// 	if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue))
-// 	{
-// 		if(WriteRegister( PIXI_DEVICE_CTRL, uControlValue | ADCCTL ))
-// 		{
-// 			chThdSleepMilliseconds(1);
-// 			if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue)) // ??
-// 			{
-// 				bResult = WriteRegister( PIXI_PORT_CONFIG + uChannel, ( ( (uChannelMode << 12 ) & FUNCID ) | ( (voltageRange << 8 ) & FUNCPRM_RANGE ) ) | (samples<<5) );
-// 				chThdSleepMilliseconds(1);
-// 			}
-// 		}
-// 	}
-
-// 	return (bResult);
-// }
-
-
-// bool ConfigDigitalInput( uint8_t uChannel, LogicLevel logicLevel)
-// {
-// 	bool bResult = false;
-
-// 	uint8_t uChannelMode = CH_MODE_GPI; // CH_MODE_1
-
-// 	uint16_t uControlValue = 0;
-
-// 	if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue))
-// 	{
-// 		// Enter ADCDAT
-// 		uint32_t uVolts = GetVoltageTriggerLevel(logicLevel);
-// 		if(WriteRegister( PIXI_ADC_DATA + uChannel, uVolts))
-// 		{
-// 			chThdSleepMilliseconds(1);
-
-// 			if(WriteRegister( PIXI_DEVICE_CTRL, uControlValue | ADCCTL ))
-// 			{
-// 				chThdSleepMilliseconds(1);
-// 				if(ReadRegister( PIXI_DEVICE_CTRL, &uControlValue)) // ??
-// 				{
-// 					bResult = WriteRegister( PIXI_PORT_CONFIG + uChannel, ( ( (uChannelMode << 12 ) & FUNCID ) | ( (vr0toP10 << 8 ) & FUNCPRM_RANGE ) )  );
-// 					chThdSleepMilliseconds(1);
-// 					if(bResult)
-// 						bGpioInUsed = true;
-// 				}
-// 			}
-// 		}
-// 	}
-
-// 	LogTextMessage("ConfigDigitalInput = %u", bResult);
-// 	return (bResult);
-// }
 
 bool WriteAnalog(uint8_t uChannel, uint16_t uValue)
 {
@@ -983,6 +857,10 @@ bool ReadDigital(uint8_t uChannel, bool *pbValue)
 #if COUNTING_BASED
 bool ProcessOutputChannels(void)
 {
+#if ANALYSER	
+	palWritePad(GPIOA, 5, true);
+#endif
+
 	// First gpio out
 	bool bResult = false;
 	
@@ -1007,11 +885,19 @@ bool ProcessOutputChannels(void)
 		SpiTransmit(uPos);
 	}
 
+#if ANALYSER	
+	palWritePad(GPIOA, 5, false);
+#endif
+
 	return bResult;
 }
 
 bool ProcessInputChannels(void)
 {
+#if ANALYSER	
+	palWritePad(GPIOA, 6, true);
+#endif
+
 	// First gpio in
 	bool bResult = false;
 	
@@ -1037,6 +923,10 @@ bool ProcessInputChannels(void)
 		}
 	}
 
+	#if ANALYSER	
+	palWritePad(GPIOA, 6, false);
+#endif
+
 	return bResult;
 }
 
@@ -1047,7 +937,10 @@ bool ProcessChannel(uint16_t uChannel)
 	bool bResult = true;
 	ChannelInfo &channel = channels[uChannel];
 
-	palWritePad(GPIOA, 6, true);
+#if ANALYSER	
+	palWritePad(GPIOA, 7, true);
+#endif
+
 	switch (channel.GetChannelType())
 	{
 		case chGPO:
@@ -1086,7 +979,10 @@ bool ProcessChannel(uint16_t uChannel)
 
 		default: break;
 	}
-	palWritePad(GPIOA, 6, false);
+
+#if ANALYSER	
+	palWritePad(GPIOA, 7, false);
+#endif
 
 	return bResult;
 }
@@ -1094,6 +990,7 @@ bool ProcessChannel(uint16_t uChannel)
 
 void DebugDump(void)
 {
+#if DEBUG
 	for(uint8_t u=0; bInititalised && (u < CHANNEL_COUNT); u++)
 	{
 		if(channels[u].IsAnalog() || channels[u].IsDigital())
@@ -1101,11 +998,14 @@ void DebugDump(void)
 			LogTextMessage("channel %u : %s\r\n", u, channels[u].GetStatusString());
 		}
 	}
+#endif	
 }
 
 msg_t ThreadX()
 {
+#if DEBUG	
   LogTextMessage("MAX11300 thread started");
+#endif
 	ClearDigital();
   while ( !chThdShouldTerminate() ) 
   {
@@ -1120,10 +1020,12 @@ msg_t ThreadX()
 			for(uint8_t u=0; bInititalised && (u < CHANNEL_COUNT); u++)
 			{
 				bool bConfigured = ConfigChannel(u);
+#if DEBUG				
 				if(bConfigured)
 					LogTextMessage("Initialised channel %u as %s", u, channels[u].GetStatusString());
 				else
 					LogTextMessage("Failed to initialise channel %u as %s", u, channels[u].GetStatusString());
+#endif
 			}
     }
 #if COUNTING_BASED
@@ -1152,14 +1054,15 @@ msg_t ThreadX()
 #endif // COUNTING_BASED
  }
 
+#if DEBUG 
   LogTextMessage("MAX11300 thread terminated");
+#endif
 
   chThdExit((msg_t)0);
 }
 
 void Terminate(void)
 {
-	palWritePad(GPIOA, 4, true);
 	if(bInititalised)
 	{
 		static bool bTerminated = false;
@@ -1177,8 +1080,6 @@ void Terminate(void)
 			chThdWait( pProcessThread );
 		}
 	}
-	palWritePad(GPIOA, 4, false);
-
 }
 
 }; // namespace

@@ -13,7 +13,7 @@
    <obj type="MAX11300/AnalogOut" uuid="b06b93b3-70c5-47a4-b684-b142743d04ad" name="AnalogOut_1" x="266" y="42">
       <params/>
       <attribs>
-         <spinner attributeName="channel" value="4"/>
+         <spinner attributeName="channel" value="0"/>
          <combo attributeName="range" selection="0v to 10v"/>
       </attribs>
    </obj>
@@ -22,6 +22,7 @@
       <attribs>
          <spinner attributeName="channel" value="1"/>
          <combo attributeName="range" selection="0v to 10v"/>
+         <combo attributeName="oversample" selection="x1"/>
       </attribs>
    </obj>
    <obj type="conv/unipolar2bipolar" uuid="efc8ee28c508740c5edf7995eaaa07a6d6818e5e" name="unipolar2bipolar_1" x="546" y="42">
@@ -33,12 +34,13 @@
       <attribs/>
    </obj>
    <comment type="patch/comment" x="56" y="140" text="Connect a jumper write between ports 0 and 1"/>
-   <comment type="patch/comment" x="56" y="154" text="Analog ranges are 0v-10v, -5V to 5V or -10v to 0V"/>
+   <comment type="patch/comment" x="56" y="154" text="Analog ranges are 0v to 10v, -5V to 5V or -10v to 0V"/>
    <comment type="patch/comment" x="56" y="168" text="Negative values require a negative power supply to the MAX11300"/>
+   <comment type="patch/comment" x="56" y="182" text="Each Analog out takes 40us, so if using 20 you will only get an update every 800us"/>
    <comment type="patch/comment" x="56" y="308" text="&lt;html&gt;&lt;div width=390px align=center&gt;&lt;h1&gt;Digital input and output"/>
    <obj type="lfo/square" uuid="de6909eb64db13af5b43f979a4c130024b3a4793" name="square_1" x="56" y="350">
       <params>
-         <frac32.s.map name="pitch" value="47.0"/>
+         <frac32.s.map name="pitch" value="61.0"/>
       </params>
       <attribs/>
    </obj>
@@ -53,7 +55,6 @@
       <params/>
       <attribs>
          <spinner attributeName="channel" value="3"/>
-         <combo attributeName="level" selection="5V"/>
       </attribs>
    </obj>
    <obj type="disp/kscope 128 p trig" uuid="b1422e51800273c4e8afe943ddfa1441ecb7a77b" name="kscope_1" x="448" y="350">
@@ -94,8 +95,8 @@
    </settings>
    <notes><![CDATA[]]></notes>
    <windowPos>
-      <x>96</x>
-      <y>517</y>
+      <x>526</x>
+      <y>614</y>
       <width>870</width>
       <height>695</height>
    </windowPos>
