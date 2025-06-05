@@ -38,6 +38,8 @@
    <comment type="patch/comment" x="56" y="168" text="Negative values require a negative power supply to the MAX11300"/>
    <comment type="patch/comment" x="56" y="182" text="Each Analog out takes 40us, so if using 20 you will only get an update every 800us"/>
    <comment type="patch/comment" x="56" y="308" text="&lt;html&gt;&lt;div width=390px align=center&gt;&lt;h1&gt;Digital input and output"/>
+   <comment type="patch/comment" x="616" y="308" text="Troubleshooting"/>
+   <comment type="patch/comment" x="616" y="322" text="Edit MAX11300.h and set DEBUG=1"/>
    <obj type="lfo/square" uuid="de6909eb64db13af5b43f979a4c130024b3a4793" name="square_1" x="56" y="350">
       <params>
          <frac32.s.map name="pitch" value="61.0"/>
