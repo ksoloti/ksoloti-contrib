@@ -1,0 +1,75 @@
+<objdefs appVersion="1.0.12">
+   <obj.normal id="intNoteScale" uuid="939e3abc-1ecc-4805-b0b4-e4ab24e9ec80">
+      <sDescription>12 bit integer defines a scale (where 1s of binary string are allowed notes), note number and octave inputs are converted to a fractional note output, modified from harmony/note scale</sDescription>
+      <author>Reductionist Earth Catalog</author>
+      <license>BSD</license>
+      <helpPatch>harmony.axh</helpPatch>
+      <inlets>
+         <int32 name="scale" description="12 bit integer specifying scale"/>
+         <int32 name="tonic" description="tonic note number"/>
+         <int32.bipolar name="octave"/>
+         <int32.bipolar name="degree"/>
+         <bool32 name="latch"/>
+      </inlets>
+      <outlets>
+         <frac32.bipolar name="note" description="note number (-64..63)"/>
+      </outlets>
+      <displays/>
+      <params/>
+      <attribs/>
+      <code.declaration><![CDATA[int32_t _scaleVal;
+    int8_t  _scale[12];
+    int8_t  _nscale;
+    int32_t  _note;
+    int32_t  _tonic;
+    int32_t  _octave;
+    int32_t  _out;
+    int32_t  _latch;
+    int32_t  _allowed[128];
+    int32_t  _degree;
+    int32_t  _notecount;
+    int32_t  _postrack;]]></code.declaration>
+      <code.init><![CDATA[_note = 0;
+    _scaleVal = 0;
+    _nscale = 0;
+    _tonic = 0;
+    _notecount = 0;
+    _postrack = 0;
+    _degree = 0;
+    for(int i=0;i<128;i++) {
+        if(i<12){
+        	_scale[i] = 0;
+        }
+        _allowed[i] = 0;
+    }]]></code.init>
+      <code.krate><![CDATA[_latch = inlet_latch;
+    if (_scaleVal != inlet_scale) {
+        // calculate new scale parameters as they changed
+        // optimize for evaluation
+        _postrack = 0;
+        _notecount = 0;
+        for(int i=0;i<128;i++) {
+        	if((1<<(i%12))&inlet_scale) {
+        		if(i<12) {
+        			_notecount = _notecount + 1;
+        		}
+        		_allowed[_postrack] = (i - 64) << 21;
+        		_postrack = _postrack + 1;
+        	}
+        }
+        for(int i=_postrack;i<128;i++) {
+        	_allowed[i] = _allowed[i-_postrack];
+        }
+    }
+    if (_degree != inlet_degree || _octave != inlet_octave || _scaleVal != inlet_scale
+        || _tonic != inlet_tonic) {
+        	_degree = inlet_degree;
+        	_tonic = inlet_tonic;
+        	_octave = inlet_octave;
+        	_scaleVal = inlet_scale;
+    		int outnoteidx = ((inlet_octave * _notecount) + _degree + _tonic) % 128;
+    		_out = _allowed[outnoteidx];
+    }
+    outlet_note = _out;]]></code.krate>
+   </obj.normal>
+</objdefs>

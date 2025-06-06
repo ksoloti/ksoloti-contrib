@@ -1,0 +1,103 @@
+<objdefs appVersion="1.0.12">
+   <obj.normal id="binaryQuant" uuid="7e8bf3d6-b685-43ec-b5d3-3d4db2a3a8f8">
+      <sDescription>quantize note input to a scale where scale is specified by 12 boolean inputs, modified from a773/quantizer</sDescription>
+      <author>Reductionist Earth Catalog</author>
+      <license>GPL</license>
+      <helpPatch>harmony.axh</helpPatch>
+      <inlets>
+         <frac32.bipolar name="note"/>
+         <bool32 name="c"/>
+         <bool32 name="csh"/>
+         <bool32 name="d"/>
+         <bool32 name="dsh"/>
+         <bool32 name="e"/>
+         <bool32 name="f"/>
+         <bool32 name="fsh"/>
+         <bool32 name="g"/>
+         <bool32 name="gsh"/>
+         <bool32 name="a"/>
+         <bool32 name="ash"/>
+         <bool32 name="b"/>
+      </inlets>
+      <outlets>
+         <frac32.bipolar name="note" description="note number (-64..63)"/>
+         <bool32 name="change" description="triggers on new quantized note"/>
+      </outlets>
+      <displays/>
+      <params/>
+      <attribs/>
+      <code.declaration><![CDATA[int32_t	_scaleVal;
+float	_last_note;
+int32_t	_out;
+int32_t	_last_out_note;
+int		_midi_notes[252];
+int32_t	_last_scale;
+int		_gate_hi_counter;
+int		_nb_waits;
+bool		_storedbin[12];
+bool		_lastbin[12];]]></code.declaration>
+      <code.init><![CDATA[_nb_waits = 1;]]></code.init>
+      <code.krate><![CDATA[// collect inlet bools into storedbin
+_storedbin[0] = inlet_a;
+_storedbin[1] = inlet_ash;
+_storedbin[2] = inlet_d;
+_storedbin[3] = inlet_dsh;
+_storedbin[4] = inlet_e;
+_storedbin[5] = inlet_f;
+_storedbin[6] = inlet_fsh;
+_storedbin[7] = inlet_g;
+_storedbin[8] = inlet_gsh;
+_storedbin[9] = inlet_a;
+_storedbin[10] = inlet_ash;
+_storedbin[11] = inlet_b;
+
+// calculate new lookup table when scale is updated
+if (_lastbin != _storedbin) {
+	for(int i=0; i<12; i++){
+		_lastbin[i] = _storedbin[i];
+	}
+	//_lastbin = _storedbin;
+	int offset = 8; // aloloti treats 0 as E
+	for(int i=0; i<12; i++){
+    		for(int octave=0; octave<20; octave++){
+    			if((_storedbin[i]) << 21){
+    				_midi_notes[i + octave*12 + offset] = i + octave*12;
+    			} else {
+    				_midi_notes[i + octave*12 + offset] = -1;
+    			}
+    		}
+    }
+ }
+
+if (_last_note != inlet_note) {
+	_last_note = inlet_note;	
+
+  	int _initial_guess;
+	int guess;
+
+	// handle negative numbers
+  	_initial_guess = (inlet_note >> 21) + 120;
+  	
+	for(guess=_initial_guess; guess >=0; guess--){
+		if(_midi_notes[guess] > -1){
+			// appropiate note found
+			_out = (guess-120) << 21;
+			if(_out != _last_out_note){
+				// new value on note outlet
+				outlet_change = true;
+				_gate_hi_counter = _nb_waits;
+				_last_out_note = _out;
+			}
+			guess = -1; // leave loop
+		}
+	}
+}
+
+// set change outlet low after _nb_waits cycles
+if(_gate_hi_counter-- < 1){
+	outlet_change = false;
+}
+
+outlet_note = _out;]]></code.krate>
+   </obj.normal>
+</objdefs>
