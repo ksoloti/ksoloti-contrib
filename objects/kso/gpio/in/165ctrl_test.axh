@@ -1,0 +1,264 @@
+<patch-1.0 appVersion="1.0.12">
+   <obj type="kso/gpio/in/165ctrl v" uuid="0c9bfe43-cf10-4cf6-8d85-096f6c56f8d1" name="165ctrl_1" x="14" y="14">
+      <params/>
+      <attribs>
+         <combo attributeName="data" selection="PA0"/>
+         <combo attributeName="clock" selection="PA1"/>
+         <combo attributeName="latch" selection="PA2"/>
+         <spinner attributeName="bits" value="16"/>
+         <combo attributeName="rate" selection="1/2"/>
+      </attribs>
+   </obj>
+   <obj type="kso/gpio/in/165in" uuid="d5a0414b-4490-4f28-9d8b-cb1edee698e7" name="165in_1" x="140" y="14">
+      <params/>
+      <attribs>
+         <objref attributeName="port" obj="165ctrl_1"/>
+         <spinner attributeName="bit" value="0"/>
+      </attribs>
+   </obj>
+   <obj type="disp/bool" uuid="a0ee71d48208b71752cbb8c05e55145106ef3946" name="bool_1" x="266" y="14">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="kso/gpio/in/165in" uuid="d5a0414b-4490-4f28-9d8b-cb1edee698e7" name="165in_2" x="350" y="14">
+      <params/>
+      <attribs>
+         <objref attributeName="port" obj="165ctrl_1"/>
+         <spinner attributeName="bit" value="1"/>
+      </attribs>
+   </obj>
+   <obj type="disp/bool" uuid="a0ee71d48208b71752cbb8c05e55145106ef3946" name="bool_2" x="476" y="14">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="kso/gpio/in/165in" uuid="d5a0414b-4490-4f28-9d8b-cb1edee698e7" name="165in_3" x="560" y="14">
+      <params/>
+      <attribs>
+         <objref attributeName="port" obj="165ctrl_1"/>
+         <spinner attributeName="bit" value="2"/>
+      </attribs>
+   </obj>
+   <obj type="disp/bool" uuid="a0ee71d48208b71752cbb8c05e55145106ef3946" name="bool_3" x="686" y="14">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="kso/gpio/in/165in" uuid="d5a0414b-4490-4f28-9d8b-cb1edee698e7" name="165in_4" x="770" y="14">
+      <params/>
+      <attribs>
+         <objref attributeName="port" obj="165ctrl_1"/>
+         <spinner attributeName="bit" value="3"/>
+      </attribs>
+   </obj>
+   <obj type="disp/bool" uuid="a0ee71d48208b71752cbb8c05e55145106ef3946" name="bool_4" x="896" y="14">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="kso/gpio/in/165in" uuid="d5a0414b-4490-4f28-9d8b-cb1edee698e7" name="165in_5" x="140" y="112">
+      <params/>
+      <attribs>
+         <objref attributeName="port" obj="165ctrl_1"/>
+         <spinner attributeName="bit" value="4"/>
+      </attribs>
+   </obj>
+   <obj type="disp/bool" uuid="a0ee71d48208b71752cbb8c05e55145106ef3946" name="bool_5" x="266" y="112">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="kso/gpio/in/165in" uuid="d5a0414b-4490-4f28-9d8b-cb1edee698e7" name="165in_6" x="350" y="112">
+      <params/>
+      <attribs>
+         <objref attributeName="port" obj="165ctrl_1"/>
+         <spinner attributeName="bit" value="5"/>
+      </attribs>
+   </obj>
+   <obj type="disp/bool" uuid="a0ee71d48208b71752cbb8c05e55145106ef3946" name="bool_6" x="476" y="112">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="kso/gpio/in/165in" uuid="d5a0414b-4490-4f28-9d8b-cb1edee698e7" name="165in_7" x="560" y="112">
+      <params/>
+      <attribs>
+         <objref attributeName="port" obj="165ctrl_1"/>
+         <spinner attributeName="bit" value="6"/>
+      </attribs>
+   </obj>
+   <obj type="disp/bool" uuid="a0ee71d48208b71752cbb8c05e55145106ef3946" name="bool_7" x="686" y="112">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="kso/gpio/in/165in" uuid="d5a0414b-4490-4f28-9d8b-cb1edee698e7" name="165in_8" x="770" y="112">
+      <params/>
+      <attribs>
+         <objref attributeName="port" obj="165ctrl_1"/>
+         <spinner attributeName="bit" value="7"/>
+      </attribs>
+   </obj>
+   <obj type="disp/bool" uuid="a0ee71d48208b71752cbb8c05e55145106ef3946" name="bool_8" x="896" y="112">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="kso/gpio/in/165in" uuid="d5a0414b-4490-4f28-9d8b-cb1edee698e7" name="165in_9" x="140" y="252">
+      <params/>
+      <attribs>
+         <objref attributeName="port" obj="165ctrl_1"/>
+         <spinner attributeName="bit" value="8"/>
+      </attribs>
+   </obj>
+   <obj type="disp/bool" uuid="a0ee71d48208b71752cbb8c05e55145106ef3946" name="bool_9" x="266" y="252">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="kso/gpio/in/165in" uuid="d5a0414b-4490-4f28-9d8b-cb1edee698e7" name="165in_10" x="350" y="252">
+      <params/>
+      <attribs>
+         <objref attributeName="port" obj="165ctrl_1"/>
+         <spinner attributeName="bit" value="9"/>
+      </attribs>
+   </obj>
+   <obj type="disp/bool" uuid="a0ee71d48208b71752cbb8c05e55145106ef3946" name="bool_10" x="476" y="252">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="kso/gpio/in/165in" uuid="d5a0414b-4490-4f28-9d8b-cb1edee698e7" name="165in_11" x="560" y="252">
+      <params/>
+      <attribs>
+         <objref attributeName="port" obj="165ctrl_1"/>
+         <spinner attributeName="bit" value="10"/>
+      </attribs>
+   </obj>
+   <obj type="disp/bool" uuid="a0ee71d48208b71752cbb8c05e55145106ef3946" name="bool_11" x="686" y="252">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="kso/gpio/in/165in" uuid="d5a0414b-4490-4f28-9d8b-cb1edee698e7" name="165in_12" x="770" y="252">
+      <params/>
+      <attribs>
+         <objref attributeName="port" obj="165ctrl_1"/>
+         <spinner attributeName="bit" value="11"/>
+      </attribs>
+   </obj>
+   <obj type="disp/bool" uuid="a0ee71d48208b71752cbb8c05e55145106ef3946" name="bool_12" x="896" y="252">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="kso/gpio/in/165in" uuid="d5a0414b-4490-4f28-9d8b-cb1edee698e7" name="165in_13" x="140" y="350">
+      <params/>
+      <attribs>
+         <objref attributeName="port" obj="165ctrl_1"/>
+         <spinner attributeName="bit" value="12"/>
+      </attribs>
+   </obj>
+   <obj type="disp/bool" uuid="a0ee71d48208b71752cbb8c05e55145106ef3946" name="bool_13" x="266" y="350">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="kso/gpio/in/165in" uuid="d5a0414b-4490-4f28-9d8b-cb1edee698e7" name="165in_14" x="350" y="350">
+      <params/>
+      <attribs>
+         <objref attributeName="port" obj="165ctrl_1"/>
+         <spinner attributeName="bit" value="13"/>
+      </attribs>
+   </obj>
+   <obj type="disp/bool" uuid="a0ee71d48208b71752cbb8c05e55145106ef3946" name="bool_14" x="476" y="350">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="kso/gpio/in/165in" uuid="d5a0414b-4490-4f28-9d8b-cb1edee698e7" name="165in_15" x="560" y="350">
+      <params/>
+      <attribs>
+         <objref attributeName="port" obj="165ctrl_1"/>
+         <spinner attributeName="bit" value="14"/>
+      </attribs>
+   </obj>
+   <obj type="disp/bool" uuid="a0ee71d48208b71752cbb8c05e55145106ef3946" name="bool_15" x="686" y="350">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="kso/gpio/in/165in" uuid="d5a0414b-4490-4f28-9d8b-cb1edee698e7" name="165in_16" x="770" y="350">
+      <params/>
+      <attribs>
+         <objref attributeName="port" obj="165ctrl_1"/>
+         <spinner attributeName="bit" value="15"/>
+      </attribs>
+   </obj>
+   <obj type="disp/bool" uuid="a0ee71d48208b71752cbb8c05e55145106ef3946" name="bool_16" x="896" y="350">
+      <params/>
+      <attribs/>
+   </obj>
+   <nets>
+      <net>
+         <source obj="165in_1" outlet="out"/>
+         <dest obj="bool_1" inlet="in"/>
+      </net>
+      <net>
+         <source obj="165in_2" outlet="out"/>
+         <dest obj="bool_2" inlet="in"/>
+      </net>
+      <net>
+         <source obj="165in_3" outlet="out"/>
+         <dest obj="bool_3" inlet="in"/>
+      </net>
+      <net>
+         <source obj="165in_4" outlet="out"/>
+         <dest obj="bool_4" inlet="in"/>
+      </net>
+      <net>
+         <source obj="165in_5" outlet="out"/>
+         <dest obj="bool_5" inlet="in"/>
+      </net>
+      <net>
+         <source obj="165in_6" outlet="out"/>
+         <dest obj="bool_6" inlet="in"/>
+      </net>
+      <net>
+         <source obj="165in_7" outlet="out"/>
+         <dest obj="bool_7" inlet="in"/>
+      </net>
+      <net>
+         <source obj="165in_8" outlet="out"/>
+         <dest obj="bool_8" inlet="in"/>
+      </net>
+      <net>
+         <source obj="165in_9" outlet="out"/>
+         <dest obj="bool_9" inlet="in"/>
+      </net>
+      <net>
+         <source obj="165in_10" outlet="out"/>
+         <dest obj="bool_10" inlet="in"/>
+      </net>
+      <net>
+         <source obj="165in_11" outlet="out"/>
+         <dest obj="bool_11" inlet="in"/>
+      </net>
+      <net>
+         <source obj="165in_12" outlet="out"/>
+         <dest obj="bool_12" inlet="in"/>
+      </net>
+      <net>
+         <source obj="165in_13" outlet="out"/>
+         <dest obj="bool_13" inlet="in"/>
+      </net>
+      <net>
+         <source obj="165in_14" outlet="out"/>
+         <dest obj="bool_14" inlet="in"/>
+      </net>
+      <net>
+         <source obj="165in_15" outlet="out"/>
+         <dest obj="bool_15" inlet="in"/>
+      </net>
+      <net>
+         <source obj="165in_16" outlet="out"/>
+         <dest obj="bool_16" inlet="in"/>
+      </net>
+   </nets>
+   <settings>
+      <subpatchmode>no</subpatchmode>
+   </settings>
+   <notes><![CDATA[]]></notes>
+   <windowPos>
+      <x>48</x>
+      <y>48</y>
+      <width>1033</width>
+      <height>620</height>
+   </windowPos>
+</patch-1.0>

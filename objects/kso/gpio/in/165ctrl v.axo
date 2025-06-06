@@ -12,6 +12,7 @@ Connect the first 165's 'QH' pin (9) to the second 165's 'SER' pin (10), and so 
 </sDescription>
       <author>Ricard Wanderlof, Ksoloti</author>
       <license>BSD</license>
+      <helpPatch>165ctrl_test.axh</helpPatch>
       <inlets/>
       <outlets/>
       <displays/>

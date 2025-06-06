@@ -3,6 +3,7 @@
       <sDescription>external digital output pin control</sDescription>
       <author>Ricard Wanderlof, Ksoloti</author>
       <license>BSD</license>
+      <helpPatch>165ctrl_test.axh</helpPatch>
       <inlets/>
       <outlets>
          <bool32 name="out"/>
