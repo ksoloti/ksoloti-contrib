@@ -1,0 +1,322 @@
+<objdefs appVersion="1.0.12">
+   <obj.normal id="165ctrl v" uuid="0c9bfe43-cf10-4cf6-8d85-096f6c56f8d1">
+      <sDescription>External digital input pin control
+"v" version: variable rate control.
+Tie "CLK INH" / clock inhibit pin to GND.
+Pins updated for Ksoloti Core.
+Data input. Also called SER, SDAT, DS... Usually pin 10 on the HC165.
+Clock output. Also called CLK, SCLK, CP... Usually pin 2 on the HC165.
+Latch output. Also called SH/LD, PL... Usually pin 1 on the HC165.
+If you want to chain HC165's (up to 4), you need to forward the serial data via the QH (also called Q7) pins.
+Connect the first 165's 'QH' pin (9) to the second 165's 'SER' pin (10), and so on.
+</sDescription>
+      <author>Ricard Wanderlof, Ksoloti</author>
+      <license>BSD</license>
+      <helpPatch>165ctrl_test.axh</helpPatch>
+      <inlets/>
+      <outlets/>
+      <displays/>
+      <params/>
+      <attribs>
+         <combo name="data" description="Data input. Also called SER, SDAT, DS... Usually pin 10 on the HC165.">
+            <MenuEntries>
+               <string>PA0</string>
+               <string>PA1</string>
+               <string>PA2</string>
+               <string>PA3</string>
+               <string>PA4</string>
+               <string>PA5</string>
+               <string>PA6</string>
+               <string>PA7</string>
+               <string>PA9</string>
+               <string>PA15</string>
+               <string>PB0</string>
+               <string>PB1</string>
+               <string>PB3</string>
+               <string>PB4</string>
+               <string>PB6</string>
+               <string>PB7</string>
+               <string>PB8</string>
+               <string>PB9</string>
+               <string>PB12</string>
+               <string>PB13</string>
+               <string>PC1</string>
+               <string>PC4</string>
+               <string>PC5</string>
+               <string>PC7</string>
+               <string>PD3</string>
+               <string>PD4</string>
+               <string>PD5</string>
+               <string>PD6</string>
+               <string>PF6</string>
+               <string>PF7</string>
+               <string>PF8</string>
+               <string>PF9</string>
+               <string>PG10</string>
+               <string>PG11</string>
+               <string>PG12</string>
+            </MenuEntries>
+            <CEntries>
+               <string>GPIOA,0</string>
+               <string>GPIOA,1</string>
+               <string>GPIOA,2</string>
+               <string>GPIOA,3</string>
+               <string>GPIOA,4</string>
+               <string>GPIOA,5</string>
+               <string>GPIOA,6</string>
+               <string>GPIOA,7</string>
+               <string>GPIOA,9</string>
+               <string>GPIOA,15</string>
+               <string>GPIOB,0</string>
+               <string>GPIOB,1</string>
+               <string>GPIOB,3</string>
+               <string>GPIOB,4</string>
+               <string>GPIOB,6</string>
+               <string>GPIOB,7</string>
+               <string>GPIOB,8</string>
+               <string>GPIOB,9</string>
+               <string>GPIOB,12</string>
+               <string>GPIOB,13</string>
+               <string>GPIOC,1</string>
+               <string>GPIOC,4</string>
+               <string>GPIOC,5</string>
+               <string>GPIOC,7</string>
+               <string>GPIOD,3</string>
+               <string>GPIOD,4</string>
+               <string>GPIOD,5</string>
+               <string>GPIOD,6</string>
+               <string>GPIOF,6</string>
+               <string>GPIOF,7</string>
+               <string>GPIOF,8</string>
+               <string>GPIOF,9</string>
+               <string>GPIOG,10</string>
+               <string>GPIOG,11</string>
+               <string>GPIOG,12</string>
+            </CEntries>
+         </combo>
+         <combo name="clock" description="Clock output. Also called CLK, SCLK, CP... Usually pin 2 on the HC165.">
+            <MenuEntries>
+               <string>PA0</string>
+               <string>PA1</string>
+               <string>PA2</string>
+               <string>PA3</string>
+               <string>PA4</string>
+               <string>PA5</string>
+               <string>PA6</string>
+               <string>PA7</string>
+               <string>PA9</string>
+               <string>PA15</string>
+               <string>PB0</string>
+               <string>PB1</string>
+               <string>PB3</string>
+               <string>PB4</string>
+               <string>PB6</string>
+               <string>PB7</string>
+               <string>PB8</string>
+               <string>PB9</string>
+               <string>PB12</string>
+               <string>PB13</string>
+               <string>PC1</string>
+               <string>PC4</string>
+               <string>PC5</string>
+               <string>PC7</string>
+               <string>PD3</string>
+               <string>PD4</string>
+               <string>PD5</string>
+               <string>PD6</string>
+               <string>PF6</string>
+               <string>PF7</string>
+               <string>PF8</string>
+               <string>PF9</string>
+               <string>PG10</string>
+               <string>PG11</string>
+               <string>PG12</string>
+            </MenuEntries>
+            <CEntries>
+               <string>GPIOA,0</string>
+               <string>GPIOA,1</string>
+               <string>GPIOA,2</string>
+               <string>GPIOA,3</string>
+               <string>GPIOA,4</string>
+               <string>GPIOA,5</string>
+               <string>GPIOA,6</string>
+               <string>GPIOA,7</string>
+               <string>GPIOA,9</string>
+               <string>GPIOA,15</string>
+               <string>GPIOB,0</string>
+               <string>GPIOB,1</string>
+               <string>GPIOB,3</string>
+               <string>GPIOB,4</string>
+               <string>GPIOB,6</string>
+               <string>GPIOB,7</string>
+               <string>GPIOB,8</string>
+               <string>GPIOB,9</string>
+               <string>GPIOB,12</string>
+               <string>GPIOB,13</string>
+               <string>GPIOC,1</string>
+               <string>GPIOC,4</string>
+               <string>GPIOC,5</string>
+               <string>GPIOC,7</string>
+               <string>GPIOD,3</string>
+               <string>GPIOD,4</string>
+               <string>GPIOD,5</string>
+               <string>GPIOD,6</string>
+               <string>GPIOF,6</string>
+               <string>GPIOF,7</string>
+               <string>GPIOF,8</string>
+               <string>GPIOF,9</string>
+               <string>GPIOG,10</string>
+               <string>GPIOG,11</string>
+               <string>GPIOG,12</string>
+            </CEntries>
+         </combo>
+         <combo name="latch" description="Latch output. Also called SH/LD, PL... Usually pin 1 on the HC165.">
+            <MenuEntries>
+               <string>PA0</string>
+               <string>PA1</string>
+               <string>PA2</string>
+               <string>PA3</string>
+               <string>PA4</string>
+               <string>PA5</string>
+               <string>PA6</string>
+               <string>PA7</string>
+               <string>PA9</string>
+               <string>PA15</string>
+               <string>PB0</string>
+               <string>PB1</string>
+               <string>PB3</string>
+               <string>PB4</string>
+               <string>PB6</string>
+               <string>PB7</string>
+               <string>PB8</string>
+               <string>PB9</string>
+               <string>PB12</string>
+               <string>PB13</string>
+               <string>PC1</string>
+               <string>PC4</string>
+               <string>PC5</string>
+               <string>PC7</string>
+               <string>PD3</string>
+               <string>PD4</string>
+               <string>PD5</string>
+               <string>PD6</string>
+               <string>PF6</string>
+               <string>PF7</string>
+               <string>PF8</string>
+               <string>PF9</string>
+               <string>PG10</string>
+               <string>PG11</string>
+               <string>PG12</string>
+            </MenuEntries>
+            <CEntries>
+               <string>GPIOA,0</string>
+               <string>GPIOA,1</string>
+               <string>GPIOA,2</string>
+               <string>GPIOA,3</string>
+               <string>GPIOA,4</string>
+               <string>GPIOA,5</string>
+               <string>GPIOA,6</string>
+               <string>GPIOA,7</string>
+               <string>GPIOA,9</string>
+               <string>GPIOA,15</string>
+               <string>GPIOB,0</string>
+               <string>GPIOB,1</string>
+               <string>GPIOB,3</string>
+               <string>GPIOB,4</string>
+               <string>GPIOB,6</string>
+               <string>GPIOB,7</string>
+               <string>GPIOB,8</string>
+               <string>GPIOB,9</string>
+               <string>GPIOB,12</string>
+               <string>GPIOB,13</string>
+               <string>GPIOC,1</string>
+               <string>GPIOC,4</string>
+               <string>GPIOC,5</string>
+               <string>GPIOC,7</string>
+               <string>GPIOD,3</string>
+               <string>GPIOD,4</string>
+               <string>GPIOD,5</string>
+               <string>GPIOD,6</string>
+               <string>GPIOF,6</string>
+               <string>GPIOF,7</string>
+               <string>GPIOF,8</string>
+               <string>GPIOF,9</string>
+               <string>GPIOG,10</string>
+               <string>GPIOG,11</string>
+               <string>GPIOG,12</string>
+            </CEntries>
+         </combo>
+         <spinner name="bits" description="&lt;html&gt;The number of bits (i.e. digital input pins) that are read.&lt;br&gt;For example, set bits to '1' to read one pin (D0). Thew state of this pin can is bit '0' of the '165in' object.&lt;br&gt;One HC165 can read up to 8 bits (D0 to D7).&lt;br&gt;You can chain up to 4 HC165's to read up to 32 pins." MinValue="1" MaxValue="32" DefaultValue="0"/>
+         <combo name="rate" description="&lt;html&gt;How much of the read loop is done at one time.&lt;br&gt;For example, '1/2' will read half of the pins during one k-rate cycle, the other half during the next k-rate cycle.">
+            <MenuEntries>
+               <string>full</string>
+               <string>1/2</string>
+               <string>1/4</string>
+               <string>1/4</string>
+               <string>1/8</string>
+               <string>1/16</string>
+            </MenuEntries>
+            <CEntries>
+               <string>0</string>
+               <string>1</string>
+               <string>2</string>
+               <string>3</string>
+               <string>4</string>
+               <string>5</string>
+            </CEntries>
+         </combo>
+      </attribs>
+      <code.declaration><![CDATA[uint32_t data; /* data input */
+uint32_t rdata; /* Internal data read */
+int32_t count;
+int32_t looprate;]]></code.declaration>
+      <code.init><![CDATA[palSetPadMode(attr_data, PAL_MODE_INPUT);
+   palSetPadMode(attr_clock, PAL_MODE_OUTPUT_PUSHPULL);
+   palSetPadMode(attr_latch, PAL_MODE_OUTPUT_PUSHPULL);
+   /* Tie "CLK INH" clock inhibit pin to GND */
+   palWritePad(attr_latch, 1); /* parallel load when 0 (level sensitive) */
+   palWritePad(attr_clock, 1); /* clock data on rising edge, must be high during parallel load */
+   data = 0;
+   rdata = 0;
+   count = -2;]]></code.init>
+      <code.krate><![CDATA[
+/* Sequence: count runs from -2 to attr_bits<<1 - 1
+ * For -2 and -1, pulse latch (parallel load) low, must be high afterwards.
+ * For 0..attr_bits<<1 - 1, read data bit, then pulse clock low.
+ * Data is shifted on the rising edge of the clock, and the clock must
+ * remain high after reading so that it is high during the parallel
+ * load phase (see HC165 data sheet).
+ */
+
+looprate = ((attr_bits<<1) + 2) >> attr_rate;
+if (!looprate) {
+    looprate = 1;
+}
+
+for (int i = 0; i < looprate; i++) {
+    if (count < 0) {
+        palWritePad(attr_latch, count & 1); /* Pulse low, then leave high for readout */
+        count++;
+    }
+    else {
+        if (count & 1) {
+            if (palReadPad(attr_data)) {
+                rdata |= 1 << (count>>1);
+            }
+            else {
+                rdata &= ~(1 << (count>>1));
+            }
+        }
+
+        palWritePad(attr_clock, count & 1);
+
+        count++;
+        if (count > (attr_bits<<1) - 1) {
+            count = -2;
+            data = rdata; /* Set all bits in output word at once */
+            /* Clock is left high for next latch pulse (see HC165 data sheet truth table) */
+        } 
+    }
+}]]></code.krate>
+   </obj.normal>
+</objdefs>
