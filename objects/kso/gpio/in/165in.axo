@@ -1,6 +1,9 @@
 <objdefs appVersion="1.0.12">
    <obj.normal id="165in" uuid="d5a0414b-4490-4f28-9d8b-cb1edee698e7">
-      <sDescription>external digital output pin control</sDescription>
+      <sDescription>External digital output pin control.
+Note that the effective bit order is reversed in respect to the pin names D0..D7 (also called A..H) on the HC165. Bit0->D7, bit1->D6, and so on.
+This mostly has to do with efficiency and bit order of the shift register stream (MSB first).
+      </sDescription>
       <author>Ricard Wanderlof, Ksoloti</author>
       <license>BSD</license>
       <helpPatch>165ctrl_test.axh</helpPatch>

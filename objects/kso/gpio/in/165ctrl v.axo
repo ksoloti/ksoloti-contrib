@@ -1,15 +1,19 @@
 <objdefs appVersion="1.0.12">
    <obj.normal id="165ctrl v" uuid="0c9bfe43-cf10-4cf6-8d85-096f6c56f8d1">
-      <sDescription>External digital input pin control
-"v" version: variable rate control.
-Tie "CLK INH" / clock inhibit pin to GND.
+      <sDescription>External digital input pin control, "v" version: variable rate control.
 Pins updated for Ksoloti Core.
-Data input. Also called SER, SDAT, DS... Usually pin 10 on the HC165.
-Clock output. Also called CLK, SCLK, CP... Usually pin 2 on the HC165.
-Latch output. Also called SH/LD, PL... Usually pin 1 on the HC165.
-If you want to chain HC165's (up to 4), you need to forward the serial data via the QH (also called Q7) pins.
-Connect the first 165's 'QH' pin (9) to the second 165's 'SER' pin (10), and so on.
-</sDescription>
+Tie "CLK INH" / clock inhibit pin to GND.
+
+Data input: connect to QH (also called Q7), usually pin 9 on the HC165.
+Clock output: connect to CLK (also called SCLK or CP), usually pin 2 on the HC165.
+Latch output: connect to SH/LD (also called PL), usually pin 1 on the HC165.
+
+If you want to chain HC165's (up to 4), you need to forward the serial data via the SER (also called DS or SDATA) pins.
+Connect the second HC165's 'QH' pin (9) to the first 165's 'SER' pin (10), and so on.
+
+Note that the effective bit order is reversed in respect to the pin names D0..D7 (also called A..H) on the HC165. Bit0->D7, bit1->D6, and so on.
+This mostly has to do with efficiency and bit order of the shift register stream (MSB first).
+      </sDescription>
       <author>Ricard Wanderlof, Ksoloti</author>
       <license>BSD</license>
       <helpPatch>165ctrl_test.axh</helpPatch>
@@ -18,7 +22,7 @@ Connect the first 165's 'QH' pin (9) to the second 165's 'SER' pin (10), and so 
       <displays/>
       <params/>
       <attribs>
-         <combo name="data" description="Data input. Also called SER, SDAT, DS... Usually pin 10 on the HC165.">
+         <combo name="data" description="Data input: connect to QH (also called Q7), usually pin 9 on the HC165.">
             <MenuEntries>
                <string>PA0</string>
                <string>PA1</string>
@@ -94,7 +98,7 @@ Connect the first 165's 'QH' pin (9) to the second 165's 'SER' pin (10), and so 
                <string>GPIOG,12</string>
             </CEntries>
          </combo>
-         <combo name="clock" description="Clock output. Also called CLK, SCLK, CP... Usually pin 2 on the HC165.">
+         <combo name="clock" description="Clock output: connect to CLK (also called SCLK or CP), usually pin 2 on the HC165.">
             <MenuEntries>
                <string>PA0</string>
                <string>PA1</string>
@@ -170,7 +174,7 @@ Connect the first 165's 'QH' pin (9) to the second 165's 'SER' pin (10), and so 
                <string>GPIOG,12</string>
             </CEntries>
          </combo>
-         <combo name="latch" description="Latch output. Also called SH/LD, PL... Usually pin 1 on the HC165.">
+         <combo name="latch" description="Latch output: connect to SH/LD (also called PL), usually pin 1 on the HC165.">
             <MenuEntries>
                <string>PA0</string>
                <string>PA1</string>
@@ -246,8 +250,8 @@ Connect the first 165's 'QH' pin (9) to the second 165's 'SER' pin (10), and so 
                <string>GPIOG,12</string>
             </CEntries>
          </combo>
-         <spinner name="bits" description="&lt;html&gt;The number of bits (i.e. digital input pins) that are read.&lt;br&gt;For example, set bits to '1' to read one pin (D0). Thew state of this pin can is bit '0' of the '165in' object.&lt;br&gt;One HC165 can read up to 8 bits (D0 to D7).&lt;br&gt;You can chain up to 4 HC165's to read up to 32 pins." MinValue="1" MaxValue="32" DefaultValue="0"/>
-         <combo name="rate" description="&lt;html&gt;How much of the read loop is done at one time.&lt;br&gt;For example, '1/2' will read half of the pins during one k-rate cycle, the other half during the next k-rate cycle.">
+         <spinner name="bits" description="&lt;html&gt;The number of bits (i.e. digital input pins) that are read.&lt;br&gt;For example, set bits to '1' to read one pin (D7, also called H). The state of this pin is available as bit '0' of the '165in' object.&lt;br&gt;One HC165 can read up to 8 bits (D7 to D0, also called H to A, MSB first).&lt;br&gt;You can chain up to 4 HC165's to read up to 32 pins." MinValue="1" MaxValue="32" DefaultValue="0"/>
+         <combo name="rate" description="&lt;html&gt;How much of the read loop is done at a time.&lt;br&gt;For example, '1/2' will read half of the pins during one k-rate cycle, the other half during the next k-rate cycle.">
             <MenuEntries>
                <string>full</string>
                <string>1/2</string>
@@ -271,14 +275,22 @@ uint32_t rdata; /* Internal data read */
 int32_t count;
 int32_t looprate;]]></code.declaration>
       <code.init><![CDATA[palSetPadMode(attr_data, PAL_MODE_INPUT);
-   palSetPadMode(attr_clock, PAL_MODE_OUTPUT_PUSHPULL);
-   palSetPadMode(attr_latch, PAL_MODE_OUTPUT_PUSHPULL);
-   /* Tie "CLK INH" clock inhibit pin to GND */
-   palWritePad(attr_latch, 1); /* parallel load when 0 (level sensitive) */
-   palWritePad(attr_clock, 1); /* clock data on rising edge, must be high during parallel load */
-   data = 0;
-   rdata = 0;
-   count = -2;]]></code.init>
+palSetPadMode(attr_clock, PAL_MODE_OUTPUT_PUSHPULL);
+palSetPadMode(attr_latch, PAL_MODE_OUTPUT_PUSHPULL);
+/* Tie "CLK INH" clock inhibit pin to GND */
+palWritePad(attr_latch, 1); /* parallel load when 0 (level sensitive) */
+palWritePad(attr_clock, 1); /* clock data on rising edge, must be high during parallel load */
+
+data = 0;
+rdata = 0;
+count = -2;
+
+looprate = ((attr_bits<<1) + 2) >> attr_rate;
+if (!looprate) {
+	looprate = 1;
+}
+
+   ]]></code.init>
       <code.krate><![CDATA[
 /* Sequence: count runs from -2 to attr_bits<<1 - 1
  * For -2 and -1, pulse latch (parallel load) low, must be high afterwards.
@@ -287,11 +299,6 @@ int32_t looprate;]]></code.declaration>
  * remain high after reading so that it is high during the parallel
  * load phase (see HC165 data sheet).
  */
-
-looprate = ((attr_bits<<1) + 2) >> attr_rate;
-if (!looprate) {
-    looprate = 1;
-}
 
 for (int i = 0; i < looprate; i++) {
     if (count < 0) {
