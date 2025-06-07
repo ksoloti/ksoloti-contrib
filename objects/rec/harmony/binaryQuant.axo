@@ -30,13 +30,15 @@
 float	_last_note;
 int32_t	_out;
 int32_t	_last_out_note;
-int		_midi_notes[252];
+int*		_midi_notes;
 int32_t	_last_scale;
 int		_gate_hi_counter;
 int		_nb_waits;
 bool		_storedbin[12];
 bool		_lastbin[12];]]></code.declaration>
-      <code.init><![CDATA[_nb_waits = 1;]]></code.init>
+      <code.init><![CDATA[static int sdram_midi_notes[252] __attribute__((section(".sdram")));
+_midi_notes = &sdram_midi_notes[0];
+_nb_waits = 1;]]></code.init>
       <code.krate><![CDATA[// collect inlet bools into storedbin
 _storedbin[0] = inlet_a;
 _storedbin[1] = inlet_ash;

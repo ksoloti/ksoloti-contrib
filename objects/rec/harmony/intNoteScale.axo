@@ -25,11 +25,13 @@
     int32_t  _octave;
     int32_t  _out;
     int32_t  _latch;
-    int32_t  _allowed[128];
+    int32_t* _allowed;
     int32_t  _degree;
     int32_t  _notecount;
     int32_t  _postrack;]]></code.declaration>
-      <code.init><![CDATA[_note = 0;
+      <code.init><![CDATA[static int32_t sdram_allowed[128] __attribute__((section(".sdram")));
+_allowed = &sdram_allowed[0];
+_note = 0;
     _scaleVal = 0;
     _nscale = 0;
     _tonic = 0;
