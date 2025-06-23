@@ -1,6 +1,6 @@
 #pragma once
 
-#include "hal/lib/streams/chprintf.h"
+#include "../chibios/os/various/chprintf.c"
 
 // syncronization
 //
