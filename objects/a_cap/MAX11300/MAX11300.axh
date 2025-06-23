@@ -1,0 +1,105 @@
+<patch-1.0 appVersion="1.1.0">
+   <comment type="patch/comment" x="56" y="0" text="&lt;html&gt;&lt;div width=560px align=center&gt;&lt;h1&gt;Analog input and output"/>
+   <obj type="lfo/sine" uuid="75f7330c26a13953215dccc3b7b9008545c9daa9" name="sine_1" x="56" y="42">
+      <params>
+         <frac32.s.map name="pitch" value="49.0"/>
+      </params>
+      <attribs/>
+   </obj>
+   <obj type="conv/bipolar2unipolar" uuid="f6f63d71053d572d3c795f83c7ec11dfbbce82dd" name="bipolar2unipolar_1" x="154" y="42">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="MAX11300/AnalogOut" uuid="b06b93b3-70c5-47a4-b684-b142743d04ad" name="AnalogOut_1" x="266" y="42">
+      <params/>
+      <attribs>
+         <spinner attributeName="channel" value="0"/>
+         <combo attributeName="range" selection="0v to 10v"/>
+      </attribs>
+   </obj>
+   <obj type="MAX11300/AnalogIn" uuid="1909fd91-d990-49d4-af9b-9cbe8d128922" name="AnalogIn_1" x="420" y="42">
+      <params/>
+      <attribs>
+         <spinner attributeName="channel" value="1"/>
+         <combo attributeName="range" selection="0v to 10v"/>
+         <combo attributeName="oversample" selection="x1"/>
+      </attribs>
+   </obj>
+   <obj type="conv/unipolar2bipolar" uuid="efc8ee28c508740c5edf7995eaaa07a6d6818e5e" name="unipolar2bipolar_1" x="546" y="42">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="disp/kscope 128 b trig" uuid="b24afecdaf757006c3a4bb578f0aea1d7441153e" name="kscope_2" x="658" y="42">
+      <params/>
+      <attribs/>
+   </obj>
+   <comment type="patch/comment" x="56" y="140" text="Connect a jumper write between ports 0 and 1"/>
+   <comment type="patch/comment" x="56" y="154" text="Analog ranges are 0v to 10v, -5V to 5V or -10v to 0V"/>
+   <comment type="patch/comment" x="56" y="168" text="Negative values require a negative power supply to the MAX11300"/>
+   <comment type="patch/comment" x="56" y="182" text="Each Analog out takes 40us, so if using 20 you will only get an update every 800us"/>
+   <comment type="patch/comment" x="56" y="308" text="&lt;html&gt;&lt;div width=390px align=center&gt;&lt;h1&gt;Digital input and output"/>
+   <comment type="patch/comment" x="616" y="308" text="Troubleshooting"/>
+   <comment type="patch/comment" x="616" y="322" text="Edit MAX11300.h and set DEBUG=1"/>
+   <obj type="lfo/square" uuid="de6909eb64db13af5b43f979a4c130024b3a4793" name="square_1" x="56" y="350">
+      <params>
+         <frac32.s.map name="pitch" value="61.0"/>
+      </params>
+      <attribs/>
+   </obj>
+   <obj type="MAX11300/DigitalOut" uuid="3a761a84-75ca-4b90-9f25-d4128ede02ad" name="DigitalOut_1" x="154" y="350">
+      <params/>
+      <attribs>
+         <spinner attributeName="channel" value="2"/>
+         <combo attributeName="level" selection="5V"/>
+      </attribs>
+   </obj>
+   <obj type="MAX11300/DigitalIn" uuid="AnalogIn.axo" name="DigitalIn_1" x="322" y="350">
+      <params/>
+      <attribs>
+         <spinner attributeName="channel" value="3"/>
+      </attribs>
+   </obj>
+   <obj type="disp/kscope 128 p trig" uuid="b1422e51800273c4e8afe943ddfa1441ecb7a77b" name="kscope_1" x="448" y="350">
+      <params/>
+      <attribs/>
+   </obj>
+   <comment type="patch/comment" x="56" y="462" text="Connect a jumper write between ports 2 and 3"/>
+   <comment type="patch/comment" x="56" y="476" text="Digital output can be set to 3.3V, 5V or 10V"/>
+   <comment type="patch/comment" x="56" y="490" text="Digital input has a trigger level of 2.5V"/>
+   <nets>
+      <net>
+         <source obj="sine_1" outlet="wave"/>
+         <dest obj="bipolar2unipolar_1" inlet="i"/>
+      </net>
+      <net>
+         <source obj="bipolar2unipolar_1" outlet="o"/>
+         <dest obj="AnalogOut_1" inlet="in1"/>
+      </net>
+      <net>
+         <source obj="AnalogIn_1" outlet="out1"/>
+         <dest obj="unipolar2bipolar_1" inlet="i"/>
+      </net>
+      <net>
+         <source obj="unipolar2bipolar_1" outlet="o"/>
+         <dest obj="kscope_2" inlet="in"/>
+      </net>
+      <net>
+         <source obj="square_1" outlet="wave"/>
+         <dest obj="DigitalOut_1" inlet="in1"/>
+      </net>
+      <net>
+         <source obj="DigitalIn_1" outlet="out1"/>
+         <dest obj="kscope_1" inlet="in"/>
+      </net>
+   </nets>
+   <settings>
+      <subpatchmode>no</subpatchmode>
+   </settings>
+   <notes><![CDATA[]]></notes>
+   <windowPos>
+      <x>526</x>
+      <y>614</y>
+      <width>870</width>
+      <height>695</height>
+   </windowPos>
+</patch-1.0>
