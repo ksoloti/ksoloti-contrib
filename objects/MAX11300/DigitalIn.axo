@@ -1,0 +1,27 @@
+<objdefs appVersion="1.1.0">
+   <obj.normal id="DigitalIn" uuid="AnalogIn.axo">
+      <sDescription>DigitalIn</sDescription>
+      <author>AndyCap</author>
+      <license>GPL</license>
+      <helpPatch>MAX11300.axh</helpPatch>
+      <inlets/>
+      <outlets>
+         <bool32 name="out1"/>
+      </outlets>
+      <displays/>
+      <params/>
+      <attribs>
+         <spinner name="channel" MinValue="0" MaxValue="19" DefaultValue="0"/>
+      </attribs>
+      <includes>
+         <include>./MAX11300.h</include>
+      </includes>
+      <depends>
+         <depend>SPID3</depend>
+      </depends>
+      <code.init><![CDATA[MAX11300::SetDigitalInputChannel(attr_channel);
+MAX11300::Initialise();]]></code.init>
+      <code.dispose><![CDATA[MAX11300::Terminate();]]></code.dispose>
+      <code.krate><![CDATA[outlet_out1 = MAX11300::GetDigitalValue(attr_channel);]]></code.krate>
+   </obj.normal>
+</objdefs>

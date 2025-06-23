@@ -1,0 +1,39 @@
+<objdefs appVersion="1.1.0">
+   <obj.normal id="DigitalOut" uuid="3a761a84-75ca-4b90-9f25-d4128ede02ad">
+      <sDescription>DigitalOut</sDescription>
+      <author>AndyCap</author>
+      <license>GPL</license>
+      <helpPatch>MAX11300.axh</helpPatch>
+      <inlets>
+         <bool32 name="in1"/>
+      </inlets>
+      <outlets/>
+      <displays/>
+      <params/>
+      <attribs>
+         <spinner name="channel" MinValue="0" MaxValue="19" DefaultValue="0"/>
+         <combo name="level">
+            <MenuEntries>
+               <string>3.3v</string>
+               <string>5V</string>
+               <string>10V</string>
+            </MenuEntries>
+            <CEntries>
+               <string>MAX11300::ll3_3v</string>
+               <string>MAX11300::ll5v</string>
+               <string>MAX11300::ll10v</string>
+            </CEntries>
+         </combo>
+      </attribs>
+      <includes>
+         <include>./MAX11300.h</include>
+      </includes>
+      <depends>
+         <depend>SPID3</depend>
+      </depends>
+      <code.init><![CDATA[MAX11300::SetDigitalOutputChannel(attr_channel, attr_level);
+MAX11300::Initialise();]]></code.init>
+      <code.dispose><![CDATA[MAX11300::Terminate();]]></code.dispose>
+      <code.krate><![CDATA[MAX11300::SetDigitalValue(attr_channel, inlet_in1);]]></code.krate>
+   </obj.normal>
+</objdefs>

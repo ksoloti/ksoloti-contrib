@@ -1,0 +1,61 @@
+<objdefs appVersion="1.1.0">
+   <obj.normal id="AnalogIn" uuid="1909fd91-d990-49d4-af9b-9cbe8d128922">
+      <sDescription>AnalogIn</sDescription>
+      <author>AndyCap</author>
+      <license>GPL</license>
+      <helpPatch>MAX11300.axh</helpPatch>
+      <inlets/>
+      <outlets>
+         <frac32 name="out1"/>
+      </outlets>
+      <displays/>
+      <params/>
+      <attribs>
+         <spinner name="channel" MinValue="0" MaxValue="19" DefaultValue="0"/>
+         <combo name="range">
+            <MenuEntries>
+               <string>0v to 10v</string>
+               <string>-5V to 5V</string>
+               <string>-10V to 0V</string>
+            </MenuEntries>
+            <CEntries>
+               <string>MAX11300::vr0toP10</string>
+               <string>MAX11300::vrN5toP5</string>
+               <string>MAX11300::vrN10to0</string>
+            </CEntries>
+         </combo>
+         <combo name="oversample">
+            <MenuEntries>
+               <string>x1</string>
+               <string>x2</string>
+               <string>x4</string>
+               <string>x8</string>
+               <string>x16</string>
+               <string>x32</string>
+               <string>x64</string>
+               <string>x128</string>
+            </MenuEntries>
+            <CEntries>
+               <string>MAX11300::as1</string>
+               <string>MAX11300::as2</string>
+               <string>MAX11300::as4</string>
+               <string>MAX11300::as8</string>
+               <string>MAX11300::as16</string>
+               <string>MAX11300::as32</string>
+               <string>MAX11300::as64</string>
+               <string>MAX11300::as128</string>
+            </CEntries>
+         </combo>
+      </attribs>
+      <includes>
+         <include>./MAX11300.h</include>
+      </includes>
+      <depends>
+         <depend>SPID3</depend>
+      </depends>
+      <code.init><![CDATA[MAX11300::SetAnalogInputChannel(attr_channel, attr_range, attr_oversample);
+MAX11300::Initialise();]]></code.init>
+      <code.dispose><![CDATA[MAX11300::Terminate();]]></code.dispose>
+      <code.krate><![CDATA[outlet_out1 = MAX11300::GetAnalogValue(attr_channel) << 15;]]></code.krate>
+   </obj.normal>
+</objdefs>
