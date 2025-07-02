@@ -1,6 +1,6 @@
 <objdefs appVersion="1.1.0">
    <obj.normal id="Test" uuid="d8ddd93c-7722-4419-89a3-5625cd550a97">
-      <sDescription>Test</sDescription>
+      <sDescription>Test Again</sDescription>
       <license>GPL</license>
       <inlets>
          <frac32buffer.bipolar name="left" description="Left Input"/>
@@ -16,7 +16,6 @@
       </params>
       <attribs/>
       <code.srate><![CDATA[outlet_left  = __SSAT( ___SMMUL( param_volume, inlet_left)  ,28 );
-outlet_right = __SSAT( ___SMMUL( param_volume, inlet_right) ,28 );
-]]></code.srate>
+outlet_right = __SSAT( ___SMMUL( param_volume, inlet_right) ,28 );]]></code.srate>
    </obj.normal>
 </objdefs>
