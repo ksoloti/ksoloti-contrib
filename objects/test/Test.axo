@@ -1,6 +1,6 @@
 <objdefs appVersion="1.1.0">
    <obj.normal id="Test" uuid="d8ddd93c-7722-4419-89a3-5625cd550a97">
-      <sDescription>Test Again</sDescription>
+      <sDescription>Test Again2</sDescription>
       <license>GPL</license>
       <inlets>
          <frac32buffer.bipolar name="left" description="Left Input"/>
