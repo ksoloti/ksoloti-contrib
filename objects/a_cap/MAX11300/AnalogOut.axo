@@ -5,7 +5,8 @@
       <license>GPL</license>
       <helpPatch>MAX11300.axh</helpPatch>
       <inlets>
-         <frac32 name="in1"/>
+         <frac32.positive name="inp"/>
+         <frac32.bipolar name="inb"/>
       </inlets>
       <outlets/>
       <displays/>
@@ -34,6 +35,19 @@
       <code.init><![CDATA[MAX11300::SetAnalogOutputChannel(attr_channel, attr_range);
 MAX11300::Initialise();]]></code.init>
       <code.dispose><![CDATA[MAX11300::Terminate();]]></code.dispose>
-      <code.krate><![CDATA[MAX11300::SetAnalogValue(attr_channel, inlet_in1>>15);]]></code.krate>
+      <code.krate><![CDATA[// editing this
+uint16_t uValP = inlet_inp >> 15;
+uint16_t uValB = ((inlet_inb>>1)+(1<<26)) >> 15;
+uint16_t uVal = uValP + uValB;
+
+static uint16_t uDebug= 3000;
+uDebug--;
+if(uDebug == 0)
+{
+	uDebug = 3000;
+	LogTextMessage("%u", uVal);
+	
+}
+MAX11300::SetAnalogValue(attr_channel, uVal);]]></code.krate>
    </obj.normal>
 </objdefs>
