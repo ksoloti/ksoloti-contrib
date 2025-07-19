@@ -241,9 +241,13 @@ const char * const ChannelInfo::m_sLogicLevel[] = { "3.3V", "5V", "10V"};
 
 ChannelInfo channels[CHANNEL_COUNT];
 #if BOARD_KSOLOTI_CORE_H743 || BOARD_KSOLOTI_CORE_F427
+#define SSPORT	GPIOD
+#define SSPAD 	5
 uint8_t txbuf[32] SPILINK_DMA_SECTION;
 uint8_t rxbuf[32] SPILINK_DMA_SECTION;
 #else
+#define SSPORT	GPIOA
+#define SSPAD 	15
 uint8_t txbuf[32] __attribute__ ((section (".sram2")));
 uint8_t rxbuf[32] __attribute__ ((section (".sram2")));
 #endif
@@ -270,13 +274,13 @@ void spi_error_cb(SPIDriver *spip)
         .slave            = false,
         .data_cb          = NULL,
         .error_cb         = spi_error_cb,
-        .ssport           = GPIOA,
-        .sspad            = 15U,
+        .ssport           = SSPORT,
+        .sspad            = SSPAD,
         .cr1              = SPI_CR1_BR_0,
         .cr2              = 0U
     } ;
 #else
-    const SPIConfig spi3cfg = {NULL, GPIOA, 15, 0   |(0<<3) };
+    const SPIConfig spi3cfg = {NULL, SSPORT, SSPAD, 0   |(0<<3) };
 #endif
 
 /// SPI first byte when writing MAX11300 (7-bit address in bits 0x7E; LSB=0 for write)
@@ -661,7 +665,7 @@ bool Initialise(void)
 	if(!bInititalised)
 	{
     // First setup SPI3
-    palSetPadMode(GPIOA, 15, PAL_MODE_OUTPUT_PUSHPULL); // CS
+    palSetPadMode(SSPORT, SSPAD, PAL_MODE_OUTPUT_PUSHPULL); // CS
     palSetPadMode(GPIOB, 3, PAL_MODE_OUTPUT_PUSHPULL); // SCK
     palSetPadMode(GPIOD, 6, PAL_MODE_OUTPUT_PUSHPULL); // MOSI
 
