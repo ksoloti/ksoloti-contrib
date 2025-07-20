@@ -1,9 +1,9 @@
 <objdefs appVersion="1.1.0">
-   <obj.normal id="AnalogOut" uuid="b06b93b3-70c5-47a4-b684-b142743d04ad">
-      <sDescription>AnalogOut</sDescription>
+   <obj.normal id="N8AnalogOut" uuid="035be832-b5f1-4289-8889-84059703a89c">
+      <sDescription>N8AnalogOut</sDescription>
       <author>AndyCap</author>
       <license>GPL</license>
-      <helpPatch>MAX11300.axh</helpPatch>
+      <helpPatch>N8MAX11300.axh</helpPatch>
       <inlets>
          <frac32.positive name="inp"/>
          <frac32.bipolar name="inb"/>
@@ -12,7 +12,8 @@
       <displays/>
       <params/>
       <attribs>
-         <spinner name="channel" MinValue="0" MaxValue="19" DefaultValue="0"/>
+         <spinner name="row" MinValue="1" MaxValue="6" DefaultValue="1"/>
+         <spinner name="col" MinValue="1" MaxValue="3" DefaultValue="1"/>
          <combo name="range">
             <MenuEntries>
                <string>0v to 10v</string>
@@ -32,22 +33,15 @@
       <depends>
          <depend>SPID3</depend>
       </depends>
-      <code.init><![CDATA[MAX11300::SetAnalogOutputChannel(attr_channel, attr_range);
+      <code.init><![CDATA[#define CHANNEL (channels[(attr_col-1) + ((attr_row-1)*3)])
+MAX11300::SetAnalogOutputChannel(CHANNEL, attr_range);
 MAX11300::Initialise();]]></code.init>
+      <code.global><![CDATA[uint8_t channels[] = {0,1,10, 2,11,12, 3,4,13, 5,14,15, 6,7,16, 8,17,18};]]></code.global>
       <code.dispose><![CDATA[MAX11300::Terminate();]]></code.dispose>
-      <code.krate><![CDATA[// editing this
-uint16_t uValP = inlet_inp >> 15;
+      <code.krate><![CDATA[uint16_t uValP = inlet_inp >> 15;
 uint16_t uValB = ((inlet_inb>>1)+(1<<26)) >> 15;
 uint16_t uVal = uValP + uValB;
 
-static uint16_t uDebug= 3000;
-uDebug--;
-if(uDebug == 0)
-{
-	uDebug = 3000;
-	LogTextMessage("%u", uVal);
-	
-}
-MAX11300::SetAnalogValue(attr_channel, uVal);]]></code.krate>
+MAX11300::SetAnalogValue(CHANNEL, uVal);]]></code.krate>
    </obj.normal>
 </objdefs>

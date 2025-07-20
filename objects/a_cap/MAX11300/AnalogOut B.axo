@@ -1,0 +1,95 @@
+<objdefs appVersion="1.1.0">
+   <obj.normal id="AnalogOut Bipolar" uuid="b06b93b3-70c5-47a4-b684-b142743d04ad">
+      <sDescription>AnalogOut Bipolar</sDescription>
+      <author>AndyCap</author>
+      <license>GPL</license>
+      <helpPatch>MAX11300.axh</helpPatch>
+      <inlets>
+         <frac32.bipolar name="in"/>
+      </inlets>
+      <outlets/>
+      <displays/>
+      <params>
+         <frac32.s.map.ratio name="trim">
+            <DefaultValue v="0.0"/>
+         </frac32.s.map.ratio>
+         <frac32.s.map.ratio name="scale"/>
+         <frac32.s.map.ratio name="offset"/>
+      </params>
+      <attribs>
+         <spinner name="channel" MinValue="0" MaxValue="19" DefaultValue="0"/>
+         <combo name="range">
+            <MenuEntries>
+               <string>0v to 10v</string>
+               <string>-5V to 5V</string>
+               <string>-10V to 0V</string>
+            </MenuEntries>
+            <CEntries>
+               <string>MAX11300::vr0toP10</string>
+               <string>MAX11300::vrN5toP5</string>
+               <string>MAX11300::vrN10to0</string>
+            </CEntries>
+         </combo>
+      </attribs>
+      <includes>
+         <include>./MAX11300.h</include>
+      </includes>
+      <depends>
+         <depend>SPID3</depend>
+      </depends>
+      <code.init><![CDATA[MAX11300::SetAnalogOutputChannel(attr_channel, attr_range);
+MAX11300::Initialise();]]></code.init>
+      <code.global><![CDATA[float FixedToFloat(int32_t nVal)
+{
+  if (nVal < 0)
+  {
+    nVal -= 1;
+    nVal = ~nVal;
+    return -1 * (1.0f * nVal) / (1 << 27);
+  }
+  else
+  {
+    return (1.0f * nVal) / (1 << 27);
+  }
+}]]></code.global>
+      <code.dispose><![CDATA[MAX11300::Terminate();]]></code.dispose>
+      <code.krate><![CDATA[float fIn = FixedToFloat(inlet_in);
+float fTrim = 1.0f + (0.1f * FixedToFloat(param_trim));
+float fScale = 1.0f + FixedToFloat(param_scale);
+float fOffset = 0.5f * FixedToFloat(param_offset);
+
+
+// Convert to abs
+float fAbs = 0.5f * (fIn + 1.0f);
+
+// trim
+float fAfterTrim = fAbs * fTrim;
+
+// scale
+float fAfterScale = fAfterTrim * fScale;
+
+// offset
+float fAfterOffset = fAfterScale + fOffset;
+
+// Clamp to 0 to 1
+if(fAfterOffset > 1.0f)
+	fAfterOffset = 1.0f;
+else if (fAfterOffset < 0.0f)
+	fAfterOffset = 0.0f;
+	
+// convert to 12 bits
+uint16_t uUnadjustedDacValue = 4095*fAbs;
+uint16_t uDacVal = 4095*fAfterOffset;
+
+static int debug = 3000;
+debug--;
+if(!debug)
+{
+	debug = 3000;
+	LogTextMessage("%u from %u, fIn = %f, fAbs = %f, fTrim = %f, fScale = %f, fOffset = %f", uDacVal, uUnadjustedDacValue, fIn, fAbs, fTrim, fScale, fOffset);
+}
+
+
+MAX11300::SetAnalogValue(attr_channel, uDacVal);]]></code.krate>
+   </obj.normal>
+</objdefs>
