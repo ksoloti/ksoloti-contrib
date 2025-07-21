@@ -1,5 +1,7 @@
 <patch-1.0 appVersion="1.1.0">
-   <obj type="a_cap/MAX11300/N8AnalogOut B" uuid="035be832-b5f1-4289-8889-84059703a89c" name="N8AnalogOut_1" x="182" y="42">
+   <comment type="patch/comment" x="28" y="56" text="&lt;html&gt;&lt;div width=250px align=center&gt;&lt;h1&gt;Midi to CV"/>
+   <comment type="patch/comment" x="462" y="56" text="&lt;html&gt;&lt;div width=330px align=center&gt;&lt;h1&gt;Adsr to CV"/>
+   <obj type="a_cap/MAX11300/N8AnalogOut B" uuid="035be832-b5f1-4289-8889-84059703a89c" name="N8AnalogOut_1" x="196" y="112">
       <params>
          <frac32.s.map name="trim" value="0.0"/>
          <frac32.s.map name="scale" value="0.0"/>
@@ -11,14 +13,14 @@
          <combo attributeName="range" selection="-5V to 5V"/>
       </attribs>
    </obj>
-   <obj type="a_cap/MAX11300/N8DigitalIn" uuid="496f72c6-874b-4bfa-ac52-a5757a37933e" name="N8DigitalIn_1" x="462" y="56">
+   <obj type="a_cap/MAX11300/N8DigitalIn" uuid="496f72c6-874b-4bfa-ac52-a5757a37933e" name="N8DigitalIn_1" x="462" y="112">
       <params/>
       <attribs>
          <spinner attributeName="row" value="2"/>
          <spinner attributeName="col" value="1"/>
       </attribs>
    </obj>
-   <obj type="env/adsr" uuid="d1dbcc5fa6f87b98a6a91c87fd44acee5e690bac" name="adsr_1" x="630" y="56">
+   <obj type="env/adsr" uuid="d1dbcc5fa6f87b98a6a91c87fd44acee5e690bac" name="adsr_1" x="630" y="112">
       <params>
          <frac32.s.map name="a" value="0.0"/>
          <frac32.s.map name="d" value="0.0"/>
@@ -27,7 +29,7 @@
       </params>
       <attribs/>
    </obj>
-   <obj type="a_cap/MAX11300/N8AnalogOut P" uuid="d18b25ea-943a-4ab5-8171-21c699a91496" name="N8AnalogOut_3" x="742" y="56">
+   <obj type="a_cap/MAX11300/N8AnalogOut P" uuid="d18b25ea-943a-4ab5-8171-21c699a91496" name="N8AnalogOut_3" x="742" y="112">
       <params>
          <frac32.s.map name="trim" value="0.0"/>
          <frac32.s.map name="scale" value="0.0"/>
@@ -39,11 +41,16 @@
          <combo attributeName="range" selection="0v to 10v"/>
       </attribs>
    </obj>
-   <obj type="midi/in/keyb" uuid="53b04874696932f38aceaa168bd5d9efb743716d" name="keyb_1" x="14" y="238">
+   <comment type="patch/comment" x="28" y="126" text="1,1 -&gt; Pitch out"/>
+   <comment type="patch/comment" x="28" y="140" text="1,2 -&gt; Gate out"/>
+   <comment type="patch/comment" x="28" y="154" text="1,3 -&gt; Velocity out"/>
+   <comment type="patch/comment" x="462" y="210" text="2,1 &lt;- Gate input"/>
+   <comment type="patch/comment" x="462" y="224" text="2,2 -&gt; Envelope cv"/>
+   <obj type="midi/in/keyb" uuid="53b04874696932f38aceaa168bd5d9efb743716d" name="keyb_1" x="28" y="308">
       <params/>
       <attribs/>
    </obj>
-   <obj type="a_cap/MAX11300/N8DigitalOut" uuid="9141fa55-3ab6-47f1-805e-868593573fcb" name="DigitalOut_1" x="182" y="252">
+   <obj type="a_cap/MAX11300/N8DigitalOut" uuid="9141fa55-3ab6-47f1-805e-868593573fcb" name="DigitalOut_1" x="196" y="322">
       <params/>
       <attribs>
          <spinner attributeName="row" value="1"/>
@@ -51,32 +58,8 @@
          <combo attributeName="level" selection="10V"/>
       </attribs>
    </obj>
-   <obj type="a_cap/MAX11300/N8AnalogIn" uuid="bf2a5033-6759-485a-9122-ee7ac8735301" name="N8AnalogIn_1" x="420" y="322">
-      <params/>
-      <attribs>
-         <spinner attributeName="row" value="3"/>
-         <spinner attributeName="col" value="1"/>
-         <combo attributeName="range" selection="-5V to 5V"/>
-         <combo attributeName="oversample" selection="x1"/>
-      </attribs>
-   </obj>
-   <obj type="disp/kscope 128 b trig" uuid="b24afecdaf757006c3a4bb578f0aea1d7441153e" name="kscope_2" x="616" y="322">
-      <params/>
-      <attribs/>
-   </obj>
-   <obj type="a_cap/MAX11300/N8AnalogOut B" uuid="035be832-b5f1-4289-8889-84059703a89c" name="N8AnalogOut_4" x="784" y="322">
-      <params>
-         <frac32.s.map name="trim" value="0.0"/>
-         <frac32.s.map name="scale" value="-32.0"/>
-         <frac32.s.map name="offset" value="0.0"/>
-      </params>
-      <attribs>
-         <spinner attributeName="row" value="4"/>
-         <spinner attributeName="col" value="1"/>
-         <combo attributeName="range" selection="-5V to 5V"/>
-      </attribs>
-   </obj>
-   <obj type="a_cap/MAX11300/N8AnalogOut P" uuid="d18b25ea-943a-4ab5-8171-21c699a91496" name="N8AnalogOut_2" x="182" y="350">
+   <comment type="patch/comment" x="420" y="378" text="&lt;html&gt;&lt;div width=680px align=center&gt;&lt;h1&gt;Offset/Attenuator"/>
+   <obj type="a_cap/MAX11300/N8AnalogOut P" uuid="d18b25ea-943a-4ab5-8171-21c699a91496" name="N8AnalogOut_2" x="196" y="420">
       <params>
          <frac32.s.map name="trim" value="0.0"/>
          <frac32.s.map name="scale" value="0.0"/>
@@ -88,19 +71,48 @@
          <combo attributeName="range" selection="0v to 10v"/>
       </attribs>
    </obj>
-   <obj type="a_cap/MAX11300/N8AnalogIn" uuid="bf2a5033-6759-485a-9122-ee7ac8735301" name="N8AnalogIn_2" x="420" y="574">
+   <obj type="a_cap/MAX11300/N8AnalogIn" uuid="bf2a5033-6759-485a-9122-ee7ac8735301" name="N8AnalogIn_1" x="420" y="434">
       <params/>
       <attribs>
-         <spinner attributeName="row" value="4"/>
-         <spinner attributeName="col" value="2"/>
+         <spinner attributeName="row" value="3"/>
+         <spinner attributeName="col" value="1"/>
          <combo attributeName="range" selection="-5V to 5V"/>
          <combo attributeName="oversample" selection="x1"/>
       </attribs>
    </obj>
-   <obj type="disp/kscope 128 b trig" uuid="b24afecdaf757006c3a4bb578f0aea1d7441153e" name="kscope_3" x="616" y="574">
+   <obj type="disp/kscope 128 b trig" uuid="b24afecdaf757006c3a4bb578f0aea1d7441153e" name="kscope_2" x="616" y="434">
       <params/>
       <attribs/>
    </obj>
+   <obj type="a_cap/MAX11300/N8AnalogOut B" uuid="035be832-b5f1-4289-8889-84059703a89c" name="N8AnalogOut_4" x="784" y="434">
+      <params>
+         <frac32.s.map name="trim" value="0.0"/>
+         <frac32.s.map name="scale" value="-32.0"/>
+         <frac32.s.map name="offset" value="32.0"/>
+      </params>
+      <attribs>
+         <spinner attributeName="row" value="4"/>
+         <spinner attributeName="col" value="1"/>
+         <combo attributeName="range" selection="-5V to 5V"/>
+      </attribs>
+   </obj>
+   <obj type="a_cap/MAX11300/N8AnalogIn" uuid="bf2a5033-6759-485a-9122-ee7ac8735301" name="N8AnalogIn_2" x="994" y="434">
+      <params/>
+      <attribs>
+         <spinner attributeName="row" value="4"/>
+         <spinner attributeName="col" value="3"/>
+         <combo attributeName="range" selection="-5V to 5V"/>
+         <combo attributeName="oversample" selection="x1"/>
+      </attribs>
+   </obj>
+   <obj type="disp/kscope 128 b trig" uuid="b24afecdaf757006c3a4bb578f0aea1d7441153e" name="kscope_3" x="1176" y="434">
+      <params/>
+      <attribs/>
+   </obj>
+   <comment type="patch/comment" x="420" y="574" text="3,1 &lt;- Signal input"/>
+   <comment type="patch/comment" x="994" y="574" text="Patch cable from 4,1 to 4,3"/>
+   <comment type="patch/comment" x="420" y="602" text="4,1 &lt;- Signal output"/>
+   <comment type="patch/comment" x="994" y="602" text="4,3 &lt;- Attenuated signal"/>
    <nets>
       <net>
          <source obj="keyb_1" outlet="note"/>
@@ -137,8 +149,8 @@
    </settings>
    <notes><![CDATA[]]></notes>
    <windowPos>
-      <x>477</x>
-      <y>110</y>
+      <x>506</x>
+      <y>188</y>
       <width>1759</width>
       <height>1057</height>
    </windowPos>
