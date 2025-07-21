@@ -45,9 +45,71 @@
       <code.init><![CDATA[#define CHANNEL (channels[(attr_col-1) + ((attr_row-1)*3)])
 MAX11300::SetAnalogOutputChannel(CHANNEL, attr_range);
 MAX11300::Initialise();]]></code.init>
-      <code.global><![CDATA[uint8_t channels[] = {0,1,10, 2,11,12, 3,4,13, 5,14,15, 6,7,16, 8,17,18};]]></code.global>
+      <code.global><![CDATA[uint8_t channels[] = {0,1,10, 2,11,12, 3,4,13, 5,14,15, 6,7,16, 8,17,18};
+
+float FixedToFloat(int32_t nVal)
+{
+  if (nVal < 0)
+  {
+    nVal -= 1;
+    nVal = ~nVal;
+    return -1 * (1.0f * nVal) / (1 << 27);
+  }
+  else
+  {
+    return (1.0f * nVal) / (1 << 27);
+  }
+}
+
+constexpr int32_t FloatToFixed(float f)
+{
+  return (int32_t)(round(f * (1 << 27)));
+}]]></code.global>
       <code.dispose><![CDATA[MAX11300::Terminate();]]></code.dispose>
-      <code.krate><![CDATA[float fIn = FixedToFloat(inlet_in);
+      <code.krate><![CDATA[#define USE_FIXED 1
+#if USE_FIXED
+
+#define MULTIPLY(x,y) ___SMMUL(x<<2, y<<3)
+
+static constexpr int32_t ufOne = FloatToFixed(1.0f);
+static constexpr int32_t ufPointOne = FloatToFixed(0.1f);
+static constexpr int32_t ufPointFive = FloatToFixed(0.5f);
+
+int32_t ufTrim = ufOne + MULTIPLY(ufPointOne, param_trim);
+int32_t ufScale = ufOne + param_scale;
+int32_t ufOffset = MULTIPLY(ufPointFive, param_offset);
+
+// Convert to abs
+int32_t ufAbs = MULTIPLY(ufPointFive, (inlet_in + ufOne));
+
+// Trim
+int32_t ufAfterTrim = MULTIPLY(ufAbs, ufTrim);
+
+// Scale
+int32_t ufAfterScale = MULTIPLY(ufAfterTrim, ufScale);
+
+// offset
+int32_t ufAfterOffset = ufAfterScale + ufOffset;
+
+// clamp
+if(ufAfterOffset > ufOne)
+	ufAfterOffset = ufOne;
+else if (ufAfterOffset < 0)
+	ufAfterOffset = 0;
+
+// convert to 12 bits
+uint16_t uDacVal = ufAfterOffset >> (27-12);
+
+static int debug = 3000;
+debug--;
+if(!debug)
+{
+	debug = 3000;
+	LogTextMessage("%u, fIn = %f, fAbs = %f, fTrim = %f, fScale = %f, fOffset = %f", uDacVal, FixedToFloat(inlet_in), FixedToFloat(ufAbs), FixedToFloat(ufTrim), FixedToFloat(ufScale), FixedToFloat(ufOffset));
+}
+
+#else
+float fIn = FixedToFloat(inlet_in);
 float fTrim = 1.0f + (0.1f * FixedToFloat(param_trim));
 float fScale = 1.0f + FixedToFloat(param_scale);
 float fOffset = 0.5f * FixedToFloat(param_offset);
@@ -82,7 +144,7 @@ if(!debug)
 	debug = 3000;
 	LogTextMessage("%u from %u, fIn = %f, fAbs = %f, fTrim = %f, fScale = %f, fOffset = %f", uDacVal, uUnadjustedDacValue, fIn, fAbs, fTrim, fScale, fOffset);
 }
-
+#endif
 
 MAX11300::SetAnalogValue(CHANNEL, uDacVal);]]></code.krate>
    </obj.normal>
