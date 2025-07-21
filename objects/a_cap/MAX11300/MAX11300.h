@@ -49,7 +49,7 @@ typedef enum
 	as8,
 	as16,
 	as32,
-	as54,
+	as64,
 	as128
 } ADCSamples;
 
@@ -232,6 +232,31 @@ bool bGpioInUsed = false;
 uint32_t uGpioOut = 0;
 uint32_t uGpioIn = 0;
 
+uint8_t N8ChannelLayout[] = {0,1,10, 2,11,12, 3,4,13, 5,14,15, 6,7,16, 8,17,18};
+
+uint8_t N8Channel(uint8_t uCol, uint8_t uRow)
+{
+	return (N8ChannelLayout[(uCol-1) + ((uRow-1)*3)]);
+}
+
+float FixedToFloat(int32_t nVal)
+{
+  if (nVal < 0)
+  {
+    nVal -= 1;
+    nVal = ~nVal;
+    return -1 * (1.0f * nVal) / (1 << 27);
+  }
+  else
+  {
+    return (1.0f * nVal) / (1 << 27);
+  }
+}
+
+constexpr int32_t FloatToFixed(float f)
+{
+  return (int32_t)(round(f * (1 << 27)));
+}
 
 char ChannelInfo::m_sStatusBuffer[64];
 const char * const ChannelInfo::m_sChannelType[] = { "HiZ", "GPI", "?", "GPO", "?", "DAC", "?", "ADC"};

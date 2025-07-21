@@ -1,0 +1,145 @@
+<patch-1.0 appVersion="1.1.0">
+   <obj type="a_cap/MAX11300/N8AnalogOut B" uuid="035be832-b5f1-4289-8889-84059703a89c" name="N8AnalogOut_1" x="182" y="42">
+      <params>
+         <frac32.s.map name="trim" value="0.0"/>
+         <frac32.s.map name="scale" value="0.0"/>
+         <frac32.s.map name="offset" value="0.0"/>
+      </params>
+      <attribs>
+         <spinner attributeName="row" value="1"/>
+         <spinner attributeName="col" value="1"/>
+         <combo attributeName="range" selection="-5V to 5V"/>
+      </attribs>
+   </obj>
+   <obj type="a_cap/MAX11300/N8DigitalIn" uuid="496f72c6-874b-4bfa-ac52-a5757a37933e" name="N8DigitalIn_1" x="462" y="56">
+      <params/>
+      <attribs>
+         <spinner attributeName="row" value="2"/>
+         <spinner attributeName="col" value="1"/>
+      </attribs>
+   </obj>
+   <obj type="env/adsr" uuid="d1dbcc5fa6f87b98a6a91c87fd44acee5e690bac" name="adsr_1" x="630" y="56">
+      <params>
+         <frac32.s.map name="a" value="0.0"/>
+         <frac32.s.map name="d" value="0.0"/>
+         <frac32.u.map name="s" value="16.5"/>
+         <frac32.s.map name="r" value="33.0"/>
+      </params>
+      <attribs/>
+   </obj>
+   <obj type="a_cap/MAX11300/N8AnalogOut P" uuid="d18b25ea-943a-4ab5-8171-21c699a91496" name="N8AnalogOut_3" x="742" y="56">
+      <params>
+         <frac32.s.map name="trim" value="0.0"/>
+         <frac32.s.map name="scale" value="0.0"/>
+         <frac32.s.map name="offset" value="0.0"/>
+      </params>
+      <attribs>
+         <spinner attributeName="row" value="2"/>
+         <spinner attributeName="col" value="2"/>
+         <combo attributeName="range" selection="0v to 10v"/>
+      </attribs>
+   </obj>
+   <obj type="midi/in/keyb" uuid="53b04874696932f38aceaa168bd5d9efb743716d" name="keyb_1" x="14" y="238">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="a_cap/MAX11300/N8DigitalOut" uuid="9141fa55-3ab6-47f1-805e-868593573fcb" name="DigitalOut_1" x="182" y="252">
+      <params/>
+      <attribs>
+         <spinner attributeName="row" value="1"/>
+         <spinner attributeName="col" value="2"/>
+         <combo attributeName="level" selection="10V"/>
+      </attribs>
+   </obj>
+   <obj type="a_cap/MAX11300/N8AnalogIn" uuid="bf2a5033-6759-485a-9122-ee7ac8735301" name="N8AnalogIn_1" x="420" y="322">
+      <params/>
+      <attribs>
+         <spinner attributeName="row" value="3"/>
+         <spinner attributeName="col" value="1"/>
+         <combo attributeName="range" selection="-5V to 5V"/>
+         <combo attributeName="oversample" selection="x1"/>
+      </attribs>
+   </obj>
+   <obj type="disp/kscope 128 b trig" uuid="b24afecdaf757006c3a4bb578f0aea1d7441153e" name="kscope_2" x="616" y="322">
+      <params/>
+      <attribs/>
+   </obj>
+   <obj type="a_cap/MAX11300/N8AnalogOut B" uuid="035be832-b5f1-4289-8889-84059703a89c" name="N8AnalogOut_4" x="784" y="322">
+      <params>
+         <frac32.s.map name="trim" value="0.0"/>
+         <frac32.s.map name="scale" value="-32.0"/>
+         <frac32.s.map name="offset" value="0.0"/>
+      </params>
+      <attribs>
+         <spinner attributeName="row" value="4"/>
+         <spinner attributeName="col" value="1"/>
+         <combo attributeName="range" selection="-5V to 5V"/>
+      </attribs>
+   </obj>
+   <obj type="a_cap/MAX11300/N8AnalogOut P" uuid="d18b25ea-943a-4ab5-8171-21c699a91496" name="N8AnalogOut_2" x="182" y="350">
+      <params>
+         <frac32.s.map name="trim" value="0.0"/>
+         <frac32.s.map name="scale" value="0.0"/>
+         <frac32.s.map name="offset" value="0.0"/>
+      </params>
+      <attribs>
+         <spinner attributeName="row" value="1"/>
+         <spinner attributeName="col" value="3"/>
+         <combo attributeName="range" selection="0v to 10v"/>
+      </attribs>
+   </obj>
+   <obj type="a_cap/MAX11300/N8AnalogIn" uuid="bf2a5033-6759-485a-9122-ee7ac8735301" name="N8AnalogIn_2" x="420" y="574">
+      <params/>
+      <attribs>
+         <spinner attributeName="row" value="4"/>
+         <spinner attributeName="col" value="2"/>
+         <combo attributeName="range" selection="-5V to 5V"/>
+         <combo attributeName="oversample" selection="x1"/>
+      </attribs>
+   </obj>
+   <obj type="disp/kscope 128 b trig" uuid="b24afecdaf757006c3a4bb578f0aea1d7441153e" name="kscope_3" x="616" y="574">
+      <params/>
+      <attribs/>
+   </obj>
+   <nets>
+      <net>
+         <source obj="keyb_1" outlet="note"/>
+         <dest obj="N8AnalogOut_1" inlet="in"/>
+      </net>
+      <net>
+         <source obj="keyb_1" outlet="gate"/>
+         <dest obj="DigitalOut_1" inlet="in1"/>
+      </net>
+      <net>
+         <source obj="keyb_1" outlet="velocity"/>
+         <dest obj="N8AnalogOut_2" inlet="in"/>
+      </net>
+      <net>
+         <source obj="N8DigitalIn_1" outlet="out1"/>
+         <dest obj="adsr_1" inlet="gate"/>
+      </net>
+      <net>
+         <source obj="adsr_1" outlet="env"/>
+         <dest obj="N8AnalogOut_3" inlet="in"/>
+      </net>
+      <net>
+         <source obj="N8AnalogIn_1" outlet="b"/>
+         <dest obj="kscope_2" inlet="in"/>
+         <dest obj="N8AnalogOut_4" inlet="in"/>
+      </net>
+      <net>
+         <source obj="N8AnalogIn_2" outlet="b"/>
+         <dest obj="kscope_3" inlet="in"/>
+      </net>
+   </nets>
+   <settings>
+      <subpatchmode>no</subpatchmode>
+   </settings>
+   <notes><![CDATA[]]></notes>
+   <windowPos>
+      <x>477</x>
+      <y>110</y>
+      <width>1759</width>
+      <height>1057</height>
+   </windowPos>
+</patch-1.0>
