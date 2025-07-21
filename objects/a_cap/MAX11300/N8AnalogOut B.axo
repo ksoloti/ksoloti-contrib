@@ -1,11 +1,11 @@
 <objdefs appVersion="1.1.0">
-   <obj.normal id="AnalogOut P" uuid="73bfc09d-75bb-45bf-a683-3faae84ed386">
-      <sDescription>AnalogOut P</sDescription>
+   <obj.normal id="N8AnalogOut B" uuid="035be832-b5f1-4289-8889-84059703a89c">
+      <sDescription>N8AnalogOut B</sDescription>
       <author>AndyCap</author>
       <license>GPL</license>
-      <helpPatch>MAX11300.axh</helpPatch>
+      <helpPatch>N8MAX11300.axh</helpPatch>
       <inlets>
-         <frac32.bipolar name="in"/>
+         <frac32.positive name="in"/>
       </inlets>
       <outlets/>
       <displays/>
@@ -13,11 +13,16 @@
          <frac32.s.map.ratio name="trim">
             <DefaultValue v="0.0"/>
          </frac32.s.map.ratio>
-         <frac32.s.map.ratio name="scale"/>
-         <frac32.s.map.ratio name="offset"/>
+         <frac32.s.map.ratio name="scale">
+            <DefaultValue v="0.0"/>
+         </frac32.s.map.ratio>
+         <frac32.s.map.ratio name="offset">
+            <DefaultValue v="0.0"/>
+         </frac32.s.map.ratio>
       </params>
       <attribs>
-         <spinner name="channel" MinValue="0" MaxValue="19" DefaultValue="0"/>
+         <spinner name="row" MinValue="1" MaxValue="6" DefaultValue="1"/>
+         <spinner name="col" MinValue="1" MaxValue="3" DefaultValue="1"/>
          <combo name="range">
             <MenuEntries>
                <string>0v to 10v</string>
@@ -37,21 +42,10 @@
       <depends>
          <depend>SPID3</depend>
       </depends>
-      <code.init><![CDATA[MAX11300::SetAnalogOutputChannel(attr_channel, attr_range);
+      <code.init><![CDATA[#define CHANNEL (channels[(attr_col-1) + ((attr_row-1)*3)])
+MAX11300::SetAnalogOutputChannel(CHANNEL, attr_range);
 MAX11300::Initialise();]]></code.init>
-      <code.global><![CDATA[float FixedToFloat(int32_t nVal)
-{
-  if (nVal < 0)
-  {
-    nVal -= 1;
-    nVal = ~nVal;
-    return -1 * (1.0f * nVal) / (1 << 27);
-  }
-  else
-  {
-    return (1.0f * nVal) / (1 << 27);
-  }
-}]]></code.global>
+      <code.global><![CDATA[uint8_t channels[] = {0,1,10, 2,11,12, 3,4,13, 5,14,15, 6,7,16, 8,17,18};]]></code.global>
       <code.dispose><![CDATA[MAX11300::Terminate();]]></code.dispose>
       <code.krate><![CDATA[float fIn = FixedToFloat(inlet_in);
 float fTrim = 1.0f + (0.1f * FixedToFloat(param_trim));
@@ -60,7 +54,7 @@ float fOffset = 0.5f * FixedToFloat(param_offset);
 
 
 // Convert to abs
-float fAbs = fIn;
+float fAbs = 0.5f * (fIn + 1.0f);
 
 // trim
 float fAfterTrim = fAbs * fTrim;
@@ -90,6 +84,6 @@ if(!debug)
 }
 
 
-MAX11300::SetAnalogValue(attr_channel, uDacVal);]]></code.krate>
+MAX11300::SetAnalogValue(CHANNEL, uDacVal);]]></code.krate>
    </obj.normal>
 </objdefs>

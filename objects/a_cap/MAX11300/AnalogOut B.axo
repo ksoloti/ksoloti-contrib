@@ -1,6 +1,6 @@
 <objdefs appVersion="1.1.0">
-   <obj.normal id="AnalogOut Bipolar" uuid="b06b93b3-70c5-47a4-b684-b142743d04ad">
-      <sDescription>AnalogOut Bipolar</sDescription>
+   <obj.normal id="AnalogOut B" uuid="b06b93b3-70c5-47a4-b684-b142743d04ad">
+      <sDescription>AnalogOut B</sDescription>
       <author>AndyCap</author>
       <license>GPL</license>
       <helpPatch>MAX11300.axh</helpPatch>
