@@ -15,7 +15,7 @@
 #define COUNTING_BASED 1
 
 // Set to 1 For Debug messages
-#define DEBUG 1
+#define DEBUG 0
 
 // Set to 1 For Logic Anylyser
 // GPIOA, 4 = SPI Error
@@ -897,7 +897,6 @@ bool ProcessOutputChannels(void)
 		bResult = WriteDoubleRegister(GPO_DAT_15_0, uGpioOut);
 
 	// Now any analog outs, contextual burst
-	LogTextMessage("------------ start %u", uOutStartChannel);
 	if(uOutStartChannel < 20)
 	{
 		txbuf[0] = MAX11300Addr_SPI_Write(PIXI_DAC_DATA + uOutStartChannel);
@@ -912,7 +911,6 @@ bool ProcessOutputChannels(void)
 				uint16_t uValue = channel.GetAnalogValue();
 				txbuf[uPos++] = uValue >> 8;
 				txbuf[uPos++] = uValue & 0xFF;
-				LogTextMessage("[%u] = %u", uC, uValue);
 			}
 		}
 		SpiTransmit(uPos);
@@ -1054,6 +1052,7 @@ msg_t ThreadX()
 			{
 				bool bConfigured = ConfigChannel(u);
 #if DEBUG				
+				chThdSleepMilliseconds(50);
 				if(bConfigured)
 					LogTextMessage("Initialised channel %u as %s", u, channels[u].GetStatusString());
 				else
