@@ -19,20 +19,20 @@ Offset and Scale can be used to act as an offset/attenuator of offset/amplifier 
       <outlets/>
       <displays/>
       <params>
-         <frac32.s.map.ratio name="trim">
+         <frac32.s.map.ratio name="trim" description="Trim for tuning">
             <DefaultValue v="0.0"/>
          </frac32.s.map.ratio>
-         <frac32.s.map.ratio name="scale">
+         <frac32.s.map.ratio name="scale" description="Scale output">
             <DefaultValue v="0.0"/>
          </frac32.s.map.ratio>
-         <frac32.s.map.ratio name="offset">
+         <frac32.s.map.ratio name="offset" description="Offset Output">
             <DefaultValue v="0.0"/>
          </frac32.s.map.ratio>
       </params>
       <attribs>
-         <spinner name="row" MinValue="1" MaxValue="6" DefaultValue="1"/>
-         <spinner name="col" MinValue="1" MaxValue="3" DefaultValue="1"/>
-         <combo name="range">
+         <spinner name="row" description="N8 row" MinValue="1" MaxValue="6" DefaultValue="1"/>
+         <spinner name="col" description="N8 column" MinValue="1" MaxValue="3" DefaultValue="1"/>
+         <combo name="range" description="Voltage Range">
             <MenuEntries>
                <string>0v to 10v</string>
                <string>-5V to 5V</string>

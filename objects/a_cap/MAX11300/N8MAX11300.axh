@@ -1,9 +1,9 @@
 <patch-1.0 appVersion="1.1.0">
    <comment type="patch/comment" x="28" y="56" text="&lt;html&gt;&lt;div width=250px align=center&gt;&lt;h1&gt;Midi to CV"/>
-   <comment type="patch/comment" x="462" y="56" text="&lt;html&gt;&lt;div width=330px align=center&gt;&lt;h1&gt;Adsr to CV"/>
+   <comment type="patch/comment" x="462" y="56" text="&lt;html&gt;&lt;div width=330px align=center&gt;&lt;h1&gt;Adsr"/>
    <obj type="a_cap/MAX11300/N8AnalogOut B" uuid="035be832-b5f1-4289-8889-84059703a89c" name="N8AnalogOut_1" x="196" y="112">
       <params>
-         <frac32.s.map name="trim" value="0.0"/>
+         <frac32.s.map name="trim" value="42.80000000000004"/>
          <frac32.s.map name="scale" value="0.0"/>
          <frac32.s.map name="offset" value="0.0"/>
       </params>
@@ -22,17 +22,17 @@
    </obj>
    <obj type="env/adsr" uuid="d1dbcc5fa6f87b98a6a91c87fd44acee5e690bac" name="adsr_1" x="630" y="112">
       <params>
-         <frac32.s.map name="a" value="0.0"/>
-         <frac32.s.map name="d" value="0.0"/>
-         <frac32.u.map name="s" value="16.5"/>
-         <frac32.s.map name="r" value="33.0"/>
+         <frac32.s.map name="a" value="-64.0"/>
+         <frac32.s.map name="d" value="18.0"/>
+         <frac32.u.map name="s" value="22.0"/>
+         <frac32.s.map name="r" value="16.0"/>
       </params>
       <attribs/>
    </obj>
    <obj type="a_cap/MAX11300/N8AnalogOut P" uuid="d18b25ea-943a-4ab5-8171-21c699a91496" name="N8AnalogOut_3" x="742" y="112">
       <params>
          <frac32.s.map name="trim" value="0.0"/>
-         <frac32.s.map name="scale" value="0.0"/>
+         <frac32.s.map name="scale" value="-31.0"/>
          <frac32.s.map name="offset" value="0.0"/>
       </params>
       <attribs>
@@ -58,7 +58,7 @@
          <combo attributeName="level" selection="10V"/>
       </attribs>
    </obj>
-   <comment type="patch/comment" x="420" y="378" text="&lt;html&gt;&lt;div width=680px align=center&gt;&lt;h1&gt;Offset/Attenuator"/>
+   <comment type="patch/comment" x="420" y="378" text="&lt;html&gt;&lt;div width=680px align=center&gt;&lt;h1&gt;Offset/Attenuator or Offset/Amplifier"/>
    <obj type="a_cap/MAX11300/N8AnalogOut P" uuid="d18b25ea-943a-4ab5-8171-21c699a91496" name="N8AnalogOut_2" x="196" y="420">
       <params>
          <frac32.s.map name="trim" value="0.0"/>
@@ -115,10 +115,6 @@
    <comment type="patch/comment" x="994" y="602" text="4,3 &lt;- Attenuated signal"/>
    <nets>
       <net>
-         <source obj="keyb_1" outlet="note"/>
-         <dest obj="N8AnalogOut_1" inlet="in"/>
-      </net>
-      <net>
          <source obj="keyb_1" outlet="gate"/>
          <dest obj="DigitalOut_1" inlet="in1"/>
       </net>
@@ -143,15 +139,19 @@
          <source obj="N8AnalogIn_2" outlet="b"/>
          <dest obj="kscope_3" inlet="in"/>
       </net>
+      <net>
+         <source obj="keyb_1" outlet="note"/>
+         <dest obj="N8AnalogOut_1" inlet="in"/>
+      </net>
    </nets>
    <settings>
       <subpatchmode>no</subpatchmode>
    </settings>
    <notes><![CDATA[]]></notes>
    <windowPos>
-      <x>506</x>
-      <y>188</y>
-      <width>1759</width>
-      <height>1057</height>
+      <x>640</x>
+      <y>414</y>
+      <width>1654</width>
+      <height>811</height>
    </windowPos>
 </patch-1.0>
