@@ -13,8 +13,12 @@
          <frac32.s.map.ratio name="trim">
             <DefaultValue v="0.0"/>
          </frac32.s.map.ratio>
-         <frac32.s.map.ratio name="scale"/>
-         <frac32.s.map.ratio name="offset"/>
+         <frac32.s.map.ratio name="scale">
+            <DefaultValue v="0.0"/>
+         </frac32.s.map.ratio>
+         <frac32.s.map.ratio name="offset">
+            <DefaultValue v="0.0"/>
+         </frac32.s.map.ratio>
       </params>
       <attribs>
          <spinner name="channel" MinValue="0" MaxValue="19" DefaultValue="0"/>
