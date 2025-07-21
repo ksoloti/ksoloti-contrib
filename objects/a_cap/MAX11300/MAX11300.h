@@ -15,7 +15,7 @@
 #define COUNTING_BASED 1
 
 // Set to 1 For Debug messages
-#define DEBUG 0
+#define DEBUG 1
 
 // Set to 1 For Logic Anylyser
 // GPIOA, 4 = SPI Error
@@ -897,6 +897,7 @@ bool ProcessOutputChannels(void)
 		bResult = WriteDoubleRegister(GPO_DAT_15_0, uGpioOut);
 
 	// Now any analog outs, contextual burst
+	LogTextMessage("------------ start %u", uOutStartChannel);
 	if(uOutStartChannel < 20)
 	{
 		txbuf[0] = MAX11300Addr_SPI_Write(PIXI_DAC_DATA + uOutStartChannel);
@@ -904,11 +905,14 @@ bool ProcessOutputChannels(void)
 		for(uint8_t uC = uOutStartChannel; uC < 20; uC++)
 		{
 			ChannelInfo &channel = channels[uC];
-			if(channel.IsAnalog() && channel.IsOutput())
+			if(channel.IsOutput() || (channel.IsInput() && channel.IsDigital()))
 			{
+				// Need to set digital level (for ins and outs) and analog values for burst mode
+				// Something not mentioned in the datasheet!
 				uint16_t uValue = channel.GetAnalogValue();
 				txbuf[uPos++] = uValue >> 8;
 				txbuf[uPos++] = uValue & 0xFF;
+				LogTextMessage("[%u] = %u", uC, uValue);
 			}
 		}
 		SpiTransmit(uPos);
