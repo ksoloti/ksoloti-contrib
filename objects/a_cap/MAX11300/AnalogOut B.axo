@@ -54,7 +54,7 @@ Offset and Scale can be used to act as an offset/attenuator of offset/amplifier 
 MAX11300::Initialise();]]></code.init>
       <code.dispose><![CDATA[MAX11300::Terminate();]]></code.dispose>
       <code.krate><![CDATA[#define MULTIPLY(x,y) ___SMMUL(x<<2, y<<3)
-#define DEBUG_LOG 1
+#define DEBUG_LOG 0
 
 static constexpr int32_t ufOne = MAX11300::FloatToFixed(1.0f);
 static constexpr int32_t ufPointOne = MAX11300::FloatToFixed(0.1f);

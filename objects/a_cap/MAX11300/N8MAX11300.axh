@@ -1,9 +1,10 @@
 <patch-1.0 appVersion="1.1.0">
    <comment type="patch/comment" x="28" y="56" text="&lt;html&gt;&lt;div width=250px align=center&gt;&lt;h1&gt;Midi to CV"/>
    <comment type="patch/comment" x="462" y="56" text="&lt;html&gt;&lt;div width=330px align=center&gt;&lt;h1&gt;Adsr"/>
+   <comment type="patch/comment" x="994" y="56" text="&lt;html&gt;&lt;div width=600px align=center&gt;&lt;h1&gt;Quadrature Lfo"/>
    <obj type="a_cap/MAX11300/N8AnalogOut B" uuid="035be832-b5f1-4289-8889-84059703a89c" name="N8AnalogOut_1" x="196" y="112">
       <params>
-         <frac32.s.map name="trim" value="42.80000000000004"/>
+         <frac32.s.map name="trim" value="42.799999713897705"/>
          <frac32.s.map name="scale" value="0.0"/>
          <frac32.s.map name="offset" value="0.0"/>
       </params>
@@ -41,15 +42,75 @@
          <combo attributeName="range" selection="0v to 10v"/>
       </attribs>
    </obj>
+   <obj type="QuadLFO" uuid="96037e60-515c-451e-8bfb-f2211e050131" name="QuadLFO_1" x="994" y="112">
+      <params>
+         <frac32.s.map name="pitch" value="0.0"/>
+      </params>
+      <attribs>
+         <combo attributeName="shape" selection="sin"/>
+      </attribs>
+   </obj>
+   <obj type="a_cap/MAX11300/N8AnalogOut B" uuid="035be832-b5f1-4289-8889-84059703a89c" name="N8AnalogOut_5" x="1120" y="112">
+      <params>
+         <frac32.s.map name="trim" value="0.0"/>
+         <frac32.s.map name="scale" value="0.0"/>
+         <frac32.s.map name="offset" value="0.0"/>
+      </params>
+      <attribs>
+         <spinner attributeName="row" value="5"/>
+         <spinner attributeName="col" value="1"/>
+         <combo attributeName="range" selection="-5V to 5V"/>
+      </attribs>
+   </obj>
+   <obj type="a_cap/MAX11300/N8AnalogOut B" uuid="035be832-b5f1-4289-8889-84059703a89c" name="N8AnalogOut_6" x="1288" y="112">
+      <params>
+         <frac32.s.map name="trim" value="0.0"/>
+         <frac32.s.map name="scale" value="0.0"/>
+         <frac32.s.map name="offset" value="0.0"/>
+      </params>
+      <attribs>
+         <spinner attributeName="row" value="5"/>
+         <spinner attributeName="col" value="2"/>
+         <combo attributeName="range" selection="-5V to 5V"/>
+      </attribs>
+   </obj>
+   <obj type="a_cap/MAX11300/N8AnalogOut B" uuid="035be832-b5f1-4289-8889-84059703a89c" name="N8AnalogOut_7" x="1456" y="112">
+      <params>
+         <frac32.s.map name="trim" value="0.0"/>
+         <frac32.s.map name="scale" value="0.0"/>
+         <frac32.s.map name="offset" value="0.0"/>
+      </params>
+      <attribs>
+         <spinner attributeName="row" value="6"/>
+         <spinner attributeName="col" value="1"/>
+         <combo attributeName="range" selection="-5V to 5V"/>
+      </attribs>
+   </obj>
+   <obj type="a_cap/MAX11300/N8AnalogOut B" uuid="035be832-b5f1-4289-8889-84059703a89c" name="N8AnalogOut_8" x="1624" y="112">
+      <params>
+         <frac32.s.map name="trim" value="0.0"/>
+         <frac32.s.map name="scale" value="0.0"/>
+         <frac32.s.map name="offset" value="0.0"/>
+      </params>
+      <attribs>
+         <spinner attributeName="row" value="6"/>
+         <spinner attributeName="col" value="2"/>
+         <combo attributeName="range" selection="-5V to 5V"/>
+      </attribs>
+   </obj>
    <comment type="patch/comment" x="28" y="126" text="1,1 -&gt; Pitch out"/>
    <comment type="patch/comment" x="28" y="140" text="1,2 -&gt; Gate out"/>
    <comment type="patch/comment" x="28" y="154" text="1,3 -&gt; Velocity out"/>
    <comment type="patch/comment" x="462" y="210" text="2,1 &lt;- Gate input"/>
    <comment type="patch/comment" x="462" y="224" text="2,2 -&gt; Envelope cv"/>
+   <comment type="patch/comment" x="994" y="266" text="5,1 -&gt; 0 Degrees    "/>
+   <comment type="patch/comment" x="994" y="280" text="5,2 -&gt; 90 Degrees  "/>
+   <comment type="patch/comment" x="994" y="294" text="6,1 -&gt; 180 Degrees"/>
    <obj type="midi/in/keyb" uuid="53b04874696932f38aceaa168bd5d9efb743716d" name="keyb_1" x="28" y="308">
       <params/>
       <attribs/>
    </obj>
+   <comment type="patch/comment" x="994" y="308" text="6,2 -&gt; 270 Degrees"/>
    <obj type="a_cap/MAX11300/N8DigitalOut" uuid="9141fa55-3ab6-47f1-805e-868593573fcb" name="DigitalOut_1" x="196" y="322">
       <params/>
       <attribs>
@@ -143,15 +204,31 @@
          <source obj="keyb_1" outlet="note"/>
          <dest obj="N8AnalogOut_1" inlet="in"/>
       </net>
+      <net>
+         <source obj="QuadLFO_1" outlet="0"/>
+         <dest obj="N8AnalogOut_5" inlet="in"/>
+      </net>
+      <net>
+         <source obj="QuadLFO_1" outlet="90"/>
+         <dest obj="N8AnalogOut_6" inlet="in"/>
+      </net>
+      <net>
+         <source obj="QuadLFO_1" outlet="180"/>
+         <dest obj="N8AnalogOut_7" inlet="in"/>
+      </net>
+      <net>
+         <source obj="QuadLFO_1" outlet="270"/>
+         <dest obj="N8AnalogOut_8" inlet="in"/>
+      </net>
    </nets>
    <settings>
       <subpatchmode>no</subpatchmode>
    </settings>
    <notes><![CDATA[]]></notes>
    <windowPos>
-      <x>640</x>
-      <y>414</y>
-      <width>1654</width>
-      <height>811</height>
+      <x>349</x>
+      <y>213</y>
+      <width>1967</width>
+      <height>1009</height>
    </windowPos>
 </patch-1.0>
