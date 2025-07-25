@@ -1,9 +1,9 @@
 <objdefs appVersion="1.0.12">
-   <obj.normal id="DigitalIn" uuid="fb85e86f-5b99-4812-a13a-fcf6dfa5bf80">
+   <obj.normal id="N8DigitalIn" uuid="496f72c6-874b-4bfa-ac52-a5757a37933e">
       <sDescription>DigitalIn</sDescription>
       <author>AndyCap</author>
       <license>GPL</license>
-      <helpPatch>MAX11300.axh</helpPatch>
+      <helpPatch>N8MAX11300.axh</helpPatch>
       <inlets/>
       <outlets>
          <bool32 name="out1"/>
@@ -11,7 +11,8 @@
       <displays/>
       <params/>
       <attribs>
-         <spinner name="channel" MinValue="0" MaxValue="19" DefaultValue="0"/>
+         <spinner name="row" MinValue="1" MaxValue="6" DefaultValue="1"/>
+         <spinner name="col" MinValue="1" MaxValue="3" DefaultValue="1"/>
       </attribs>
       <includes>
          <include>./MAX11300.h</include>
@@ -19,9 +20,9 @@
       <depends>
          <depend>SPID3</depend>
       </depends>
-      <code.init><![CDATA[MAX11300::SetDigitalInputChannel(attr_channel);
+      <code.init><![CDATA[MAX11300::SetDigitalInputChannel(MAX11300::N8Channel(attr_col, attr_row));
 MAX11300::Initialise();]]></code.init>
       <code.dispose><![CDATA[MAX11300::Terminate();]]></code.dispose>
-      <code.krate><![CDATA[outlet_out1 = MAX11300::GetDigitalValue(attr_channel);]]></code.krate>
+      <code.krate><![CDATA[outlet_out1 = MAX11300::GetDigitalValue(MAX11300::N8Channel(attr_col, attr_row));]]></code.krate>
    </obj.normal>
 </objdefs>

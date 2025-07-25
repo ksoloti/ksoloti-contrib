@@ -1,0 +1,45 @@
+<objdefs appVersion="1.0.12">
+   <obj.normal id="N8DigitalOut" uuid="9141fa55-3ab6-47f1-805e-868593573fcb">
+      <sDescription>Digital CV Output, to be used with the N8 MAX11300 frankenboard.
+
+Single output, logic input.
+
+Choose the row and column of the output you want to use.
+Choose the level of the output.</sDescription>
+      <author>AndyCap</author>
+      <license>GPL</license>
+      <helpPatch>N8MAX11300.axh</helpPatch>
+      <inlets>
+         <bool32 name="in1"/>
+      </inlets>
+      <outlets/>
+      <displays/>
+      <params/>
+      <attribs>
+         <spinner name="row" MinValue="1" MaxValue="6" DefaultValue="1"/>
+         <spinner name="col" MinValue="1" MaxValue="3" DefaultValue="1"/>
+         <combo name="level">
+            <MenuEntries>
+               <string>3.3v</string>
+               <string>5V</string>
+               <string>10V</string>
+            </MenuEntries>
+            <CEntries>
+               <string>MAX11300::ll3_3v</string>
+               <string>MAX11300::ll5v</string>
+               <string>MAX11300::ll10v</string>
+            </CEntries>
+         </combo>
+      </attribs>
+      <includes>
+         <include>./MAX11300.h</include>
+      </includes>
+      <depends>
+         <depend>SPID3</depend>
+      </depends>
+      <code.init><![CDATA[MAX11300::SetDigitalOutputChannel(MAX11300::N8Channel(attr_col, attr_row), attr_level);
+MAX11300::Initialise();]]></code.init>
+      <code.dispose><![CDATA[MAX11300::Terminate();]]></code.dispose>
+      <code.krate><![CDATA[MAX11300::SetDigitalValue(MAX11300::N8Channel(attr_col, attr_row), inlet_in1);]]></code.krate>
+   </obj.normal>
+</objdefs>
