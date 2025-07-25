@@ -1,0 +1,85 @@
+<objdefs appVersion="1.1.0">
+   <obj.normal id="QuadLFO" uuid="96037e60-515c-451e-8bfb-f2211e050131">
+      <sDescription>Quadrature LFO.</sDescription>
+      <author>AndyCap</author>
+      <license>GPL</license>
+      <helpPatch>N8MAX11300.axh</helpPatch>
+      <inlets>
+         <frac32.bipolar name="pitch" description="Left Input"/>
+      </inlets>
+      <outlets>
+         <frac32.bipolar name="0" description="0 degrees phase"/>
+         <frac32.bipolar name="90" description="90 degrees phase"/>
+         <frac32.bipolar name="180" description="180 degrees phase"/>
+         <frac32.bipolar name="270" description="270 degrees phase"/>
+      </outlets>
+      <displays/>
+      <params>
+         <frac32.s.map.lfopitch name="pitch"/>
+      </params>
+      <attribs>
+         <combo name="shape">
+            <MenuEntries>
+               <string>sin</string>
+               <string>tri</string>
+               <string>saw</string>
+               <string>sqr</string>
+            </MenuEntries>
+            <CEntries>
+               <string>#define LFO_SHAPE 1</string>
+               <string>#define LFO_SHAPE 2</string>
+               <string>#define LFO_SHAPE 3</string>
+               <string>#define LFO_SHAPE 4</string>
+            </CEntries>
+         </combo>
+      </attribs>
+      <code.declaration><![CDATA[// This will be the SHAPE define to use
+attr_shape
+
+uint32_t uPhase = 0;]]></code.declaration>
+      <code.krate><![CDATA[int32_t nFreq;
+
+MTOFEXTENDED(param_pitch + inlet_pitch, nFreq);
+
+uPhase += nFreq>>2;
+
+#if LFO_SHAPE==1
+	int32_t uSinSample;
+	SINE2TINTERP(uPhase, uSinSample)
+	outlet_0 = (uSinSample>>4);
+	
+	SINE2TINTERP(uPhase-0x40000000, uSinSample)
+	outlet_90 = (uSinSample>>4);
+
+	outlet_180 = -outlet_0;
+	outlet_270 = -outlet_90;
+#endif
+
+
+#if LFO_SHAPE==2
+	int32_t nSaw =  (uPhase>>4) - (1<<27);
+	outlet_0  = (1<<27) - abs(nSaw<<1);
+
+	nSaw = ((uPhase-0x40000000)>>4) - (1<<27);
+     outlet_90 = (1<<27) - abs(nSaw<<1);
+
+	outlet_180 = -outlet_0;
+	outlet_270 = -outlet_90;
+#endif
+
+#if LFO_SHAPE==3
+	outlet_0  = (uPhase>>4) - (1<<27);;
+     outlet_90 = ((uPhase-0x40000000)>>4) - (1<<27);
+     outlet_180 = ((uPhase-0x80000000)>>4) - (1<<27);
+     outlet_270 = ((uPhase+0x40000000)>>4) - (1<<27);
+#endif
+
+#if LFO_SHAPE==4
+	outlet_0 = (uPhase > (1<<31)) ?-(1<<26) : (1<<26);
+	outlet_90 = ((uPhase-0x40000000) > (1<<31)) ?-(1<<26) : (1<<26);
+
+	outlet_180 = -outlet_0;
+	outlet_270 = -outlet_90;
+#endif]]></code.krate>
+   </obj.normal>
+</objdefs>
