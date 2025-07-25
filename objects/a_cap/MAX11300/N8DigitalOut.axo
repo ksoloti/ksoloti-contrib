@@ -8,7 +8,7 @@ Choose the row and column of the output you want to use.
 Choose the level of the output.</sDescription>
       <author>AndyCap</author>
       <license>GPL</license>
-      <helpPatch>MAX11300.axh</helpPatch>
+      <helpPatch>N8MAX11300.axh</helpPatch>
       <inlets>
          <bool32 name="in1"/>
       </inlets>
