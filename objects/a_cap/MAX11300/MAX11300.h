@@ -305,7 +305,7 @@ void spi_error_cb(SPIDriver *spip)
         .cr2              = 0U
     } ;
 #else
-    const SPIConfig spi3cfg = {NULL, SSPORT, SSPAD, 0   |(0<<3) };
+    const SPIConfig spi3cfg = {NULL, SSPORT, SSPAD, SPI_CR1_BR_0 };
 #endif
 
 /// SPI first byte when writing MAX11300 (7-bit address in bits 0x7E; LSB=0 for write)
