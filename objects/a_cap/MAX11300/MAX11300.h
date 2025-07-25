@@ -49,7 +49,7 @@ typedef enum
 	as8,
 	as16,
 	as32,
-	as54,
+	as64,
 	as128
 } ADCSamples;
 
@@ -232,6 +232,31 @@ bool bGpioInUsed = false;
 uint32_t uGpioOut = 0;
 uint32_t uGpioIn = 0;
 
+uint8_t N8ChannelLayout[] = {0,1,10, 2,11,12, 3,4,13, 5,14,15, 6,7,16, 8,17,18};
+
+uint8_t N8Channel(uint8_t uCol, uint8_t uRow)
+{
+	return (N8ChannelLayout[(uCol-1) + ((uRow-1)*3)]);
+}
+
+float FixedToFloat(int32_t nVal)
+{
+  if (nVal < 0)
+  {
+    nVal -= 1;
+    nVal = ~nVal;
+    return -1 * (1.0f * nVal) / (1 << 27);
+  }
+  else
+  {
+    return (1.0f * nVal) / (1 << 27);
+  }
+}
+
+constexpr int32_t FloatToFixed(float f)
+{
+  return (int32_t)(round(f * (1 << 27)));
+}
 
 char ChannelInfo::m_sStatusBuffer[64];
 const char * const ChannelInfo::m_sChannelType[] = { "HiZ", "GPI", "?", "GPO", "?", "DAC", "?", "ADC"};
@@ -241,9 +266,13 @@ const char * const ChannelInfo::m_sLogicLevel[] = { "3.3V", "5V", "10V"};
 
 ChannelInfo channels[CHANNEL_COUNT];
 #if BOARD_KSOLOTI_CORE_H743 || BOARD_KSOLOTI_CORE_F427
+#define SSPORT	GPIOD
+#define SSPAD 	5
 uint8_t txbuf[32] SPILINK_DMA_SECTION;
 uint8_t rxbuf[32] SPILINK_DMA_SECTION;
 #else
+#define SSPORT	GPIOD
+#define SSPAD 	5
 uint8_t txbuf[32] __attribute__ ((section (".sram2")));
 uint8_t rxbuf[32] __attribute__ ((section (".sram2")));
 #endif
@@ -270,13 +299,13 @@ void spi_error_cb(SPIDriver *spip)
         .slave            = false,
         .data_cb          = NULL,
         .error_cb         = spi_error_cb,
-        .ssport           = GPIOA,
-        .sspad            = 15U,
+        .ssport           = SSPORT,
+        .sspad            = SSPAD,
         .cr1              = SPI_CR1_BR_0,
         .cr2              = 0U
     } ;
 #else
-    const SPIConfig spi3cfg = {NULL, GPIOA, 15, 0   |(0<<3) };
+    const SPIConfig spi3cfg = {NULL, SSPORT, SSPAD, 0   |(0<<3) };
 #endif
 
 /// SPI first byte when writing MAX11300 (7-bit address in bits 0x7E; LSB=0 for write)
@@ -661,7 +690,7 @@ bool Initialise(void)
 	if(!bInititalised)
 	{
     // First setup SPI3
-    palSetPadMode(GPIOA, 15, PAL_MODE_OUTPUT_PUSHPULL); // CS
+    palSetPadMode(SSPORT, SSPAD, PAL_MODE_OUTPUT_PUSHPULL); // CS
     palSetPadMode(GPIOB, 3, PAL_MODE_OUTPUT_PUSHPULL); // SCK
     palSetPadMode(GPIOD, 6, PAL_MODE_OUTPUT_PUSHPULL); // MOSI
 
@@ -875,8 +904,10 @@ bool ProcessOutputChannels(void)
 		for(uint8_t uC = uOutStartChannel; uC < 20; uC++)
 		{
 			ChannelInfo &channel = channels[uC];
-			if(channel.IsAnalog() && channel.IsOutput())
+			if(channel.IsOutput() || (channel.IsInput() && channel.IsDigital()))
 			{
+				// Need to set digital level (for ins and outs) and analog values for burst mode
+				// Something not mentioned in the datasheet!
 				uint16_t uValue = channel.GetAnalogValue();
 				txbuf[uPos++] = uValue >> 8;
 				txbuf[uPos++] = uValue & 0xFF;
@@ -1021,6 +1052,7 @@ msg_t ThreadX()
 			{
 				bool bConfigured = ConfigChannel(u);
 #if DEBUG				
+				chThdSleepMilliseconds(50);
 				if(bConfigured)
 					LogTextMessage("Initialised channel %u as %s", u, channels[u].GetStatusString());
 				else

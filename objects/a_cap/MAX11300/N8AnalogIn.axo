@@ -1,18 +1,19 @@
 <objdefs appVersion="1.0.12">
-   <obj.normal id="AnalogIn" uuid="1909fd91-d990-49d4-af9b-9cbe8d128922">
-      <sDescription>AnalogIn</sDescription>
+   <obj.normal id="N8AnalogIn" uuid="bf2a5033-6759-485a-9122-ee7ac8735301">
+      <sDescription>N8 AnalogIn</sDescription>
       <author>AndyCap</author>
       <license>GPL</license>
       <helpPatch>MAX11300.axh</helpPatch>
       <inlets/>
       <outlets>
-         <frac32.positive name="p"/>
-         <frac32.bipolar name="b"/>
+         <frac32.positive name="p" description="Unipolar Output"/>
+         <frac32.bipolar name="b" description="Bipolar Output"/>
       </outlets>
       <displays/>
       <params/>
       <attribs>
-         <spinner name="channel" MinValue="0" MaxValue="19" DefaultValue="0"/>
+         <spinner name="row" MinValue="1" MaxValue="6" DefaultValue="1"/>
+         <spinner name="col" MinValue="1" MaxValue="3" DefaultValue="1"/>
          <combo name="range">
             <MenuEntries>
                <string>0v to 10v</string>
@@ -54,10 +55,10 @@
       <depends>
          <depend>SPID3</depend>
       </depends>
-      <code.init><![CDATA[MAX11300::SetAnalogInputChannel(attr_channel, attr_range, attr_oversample);
+      <code.init><![CDATA[MAX11300::SetAnalogInputChannel(MAX11300::N8Channel(attr_col, attr_row), attr_range, attr_oversample);
 MAX11300::Initialise();]]></code.init>
       <code.dispose><![CDATA[MAX11300::Terminate();]]></code.dispose>
-      <code.krate><![CDATA[uint16_t uAdcVal = MAX11300::GetAnalogValue(attr_channel);
+      <code.krate><![CDATA[uint16_t uAdcVal = MAX11300::GetAnalogValue(MAX11300::N8Channel(attr_col, attr_row));
 outlet_p = uAdcVal << 15;
 outlet_b = (outlet_p-(1<<26))<<1;]]></code.krate>
    </obj.normal>
