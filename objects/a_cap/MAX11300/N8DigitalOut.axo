@@ -10,7 +10,7 @@ Choose the level of the output.</sDescription>
       <license>GPL</license>
       <helpPatch>MAX11300.axh</helpPatch>
       <inlets>
-         <bool32 name="in1"/>
+         <bool32 name="in1" noLabel="true"/>
       </inlets>
       <outlets/>
       <displays/>

@@ -14,7 +14,7 @@ Offset and Scale can be used to act as an offset/attenuator of offset/amplifier 
       <license>GPL</license>
       <helpPatch>N8MAX11300.axh</helpPatch>
       <inlets>
-         <frac32.positive name="in"/>
+         <frac32.positive name="in" noLabel="true"/>
       </inlets>
       <outlets/>
       <displays/>

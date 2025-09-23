@@ -9,7 +9,7 @@ This mostly has to do with efficiency and bit order of the shift register stream
       <helpPatch>165ctrl_test.axh</helpPatch>
       <inlets/>
       <outlets>
-         <bool32 name="out"/>
+         <bool32 name="out" noLabel="true"/>
       </outlets>
       <displays/>
       <params/>

@@ -6,7 +6,7 @@
       <helpPatch>MAX11300.axh</helpPatch>
       <inlets/>
       <outlets>
-         <bool32 name="out1"/>
+         <bool32 name="out1" noLabel="true"/>
       </outlets>
       <displays/>
       <params/>

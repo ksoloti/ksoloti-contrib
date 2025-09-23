@@ -12,7 +12,7 @@
          <bool32 name="latch"/>
       </inlets>
       <outlets>
-         <frac32.bipolar name="note" description="note number (-64..63)"/>
+         <frac32.bipolar name="note" description="note number (-64..63)" noLabel="true"/>
       </outlets>
       <displays/>
       <params/>

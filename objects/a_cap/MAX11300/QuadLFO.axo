@@ -5,7 +5,7 @@
       <license>GPL</license>
       <helpPatch>N8MAX11300.axh</helpPatch>
       <inlets>
-         <frac32.bipolar name="pitch" description="Left Input"/>
+         <frac32.bipolar name="pitch" description="Left Input" noLabel="true"/>
       </inlets>
       <outlets>
          <frac32.bipolar name="0" description="0 degrees phase"/>
