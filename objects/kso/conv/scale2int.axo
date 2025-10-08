@@ -1,0 +1,22 @@
+<objdefs appVersion="1.0.12">
+   <obj.normal id="scale2int" uuid="396c947c-cdf0-4d6a-b596-0b9fc96aa6c9">
+      <sDescription>Scales a unipolar fractional value (blue wire) to an integer range.
+Example: Connect a dial p, set the steps attribute to 8 -&gt; The full knob range will result in an integer range of 0 to 7.</sDescription>
+      <author>Ksoloti</author>
+      <license>GPL v3</license>
+      <inlets>
+         <frac32.positive name="i1"/>
+      </inlets>
+      <outlets>
+         <int32.positive name="o1"/>
+      </outlets>
+      <displays/>
+      <params/>
+      <attribs>
+         <spinner name="steps" MinValue="1" MaxValue="65535" DefaultValue="128"/>
+      </attribs>
+      <code.declaration><![CDATA[static const uint32_t div = ((1<<27) / attr_steps)-1;]]></code.declaration>
+      <code.krate><![CDATA[uint32_t val = inlet_i1 / div;
+outlet_o1 = val >= attr_steps ? attr_steps-1 : val;]]></code.krate>
+   </obj.normal>
+</objdefs>
