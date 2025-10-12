@@ -1,0 +1,46 @@
+<objdefs appVersion="1.1.0">
+  <obj.normal id="scope xy" uuid="79b86bb6-c952-4f2c-8037-a3f110962bed">
+    <sDescription>xy scope and stuff.</sDescription>
+    <license>GPL</license>
+    <inlets>
+      <frac32buffer.bipolar name="in_x"/>
+      <frac32buffer.bipolar name="in_y"/>
+      <bool32 name="hold"/>
+    </inlets>
+    <outlets/>
+    <displays>
+      <int8array128.xy name="scope" noLabel="true"/>
+    </displays>
+    <params/>
+    <attribs/>
+    <code.declaration><![CDATA[int8_t tX[128]; // Buffer for X data
+int8_t t[128]; // Buffer for Y data
+int index;]]></code.declaration>
+    <code.init><![CDATA[int i;
+for (i=0; i<128; i++) {
+    tX[i]=0;
+    t[i]=0;
+}
+index = 0; // index tracks position in x_buf/y_buf]]></code.init>
+    <code.krate><![CDATA[int i;
+for (i=0; i<16; i++) {
+	if (index < 128) {
+		tX[index] = (int8_t)(inlet_in__x[i] >> 21);
+		t[index] = (int8_t)(inlet_in__y[i] >> 21);
+		index++;
+	} else {
+		break; 
+	}
+}
+
+if (index == 128) {
+	if (!inlet_hold) {
+		for (i=0; i<128; i++) {
+            	disp_scope[2*i] = tX[i];
+            	disp_scope[2*i + 1] = t[i];
+		}
+	}
+	index = 0;
+}]]></code.krate>
+  </obj.normal>
+</objdefs>
