@@ -1,0 +1,160 @@
+<patch-1.0 appVersion="1.1.0">
+  <obj type="lfo/square" uuid="de6909eb64db13af5b43f979a4c130024b3a4793" name="sample switcher" x="28" y="14">
+    <params>
+      <frac32.s.map name="pitch" value="-52.3763165473938"/>
+    </params>
+    <attribs/>
+  </obj>
+  <obj type="string/c" uuid="4aa90a90c435a742ddfa152d232883fc5b2f1b3" name="c_1" x="140" y="14">
+    <params/>
+    <attribs>
+      <table attributeName="str" table="/organfinale.raw"/>
+    </attribs>
+  </obj>
+  <comment type="patch/comment" x="308" y="14" text="MAKE SURE TO UPLOAD THE TEST SAMPLES TO SD CARD, OR USE YOUR OWN"/>
+  <comment type="patch/comment" x="308" y="28" text="Select Tools -&gt; Open File Location to show the .raw files. Drag them to the SD card via Window -&gt; File Manager."/>
+  <comment type="patch/comment" x="308" y="42" text="Test samples from https://www.kozco.com/tech/soundtests.html, converted to 48khz 16bit RAW format"/>
+  <obj type="string/c" uuid="4aa90a90c435a742ddfa152d232883fc5b2f1b3" name="c_2" x="140" y="84">
+    <params/>
+    <attribs>
+      <table attributeName="str" table="/piano2.raw"/>
+    </attribs>
+  </obj>
+  <obj type="tiar/string/mux2" uuid="30532718-8506-494c-a058-054f0cb01027" name="mux2_1" x="392" y="84">
+    <params/>
+    <attribs/>
+  </obj>
+  <obj type="kso/wave/stream fn stereo" uuid="aafec6eb-8197-4520-b560-2651aa97b2fd" name="stream fn stereo" x="546" y="98">
+    <params/>
+    <attribs/>
+  </obj>
+  <obj type="ksoloti/disp/scope 128 b zoom" uuid="698870c8-15f5-4fdc-adce-0e8de7eda6ef" name="scope 128 b zoom_1" x="728" y="98">
+    <params/>
+    <attribs>
+      <combo attributeName="timebase" selection="/16"/>
+      <combo attributeName="magnify" selection="x2"/>
+    </attribs>
+  </obj>
+  <obj type="ksoloti/disp/scope 128 b zoom" uuid="698870c8-15f5-4fdc-adce-0e8de7eda6ef" name="scope 128 b zoom_2" x="882" y="98">
+    <params/>
+    <attribs>
+      <combo attributeName="timebase" selection="/16"/>
+      <combo attributeName="magnify" selection="x2"/>
+    </attribs>
+  </obj>
+  <obj type="audio/out stereo" uuid="a1ca7a567f535acc21055669829101d3ee7f0189" name="out stereo_1" x="1050" y="98">
+    <params/>
+    <attribs/>
+  </obj>
+  <obj type="ctrl/dial p" uuid="cc5d2846c3d50e425f450c4b9851371b54f4d674" name="&lt;html&gt;&lt;b&gt;POSITION" x="56" y="112">
+    <params>
+      <frac32.u.map name="value" value="32.0"/>
+    </params>
+    <attribs/>
+  </obj>
+  <obj type="ctrl/i" uuid="a3786816db6ea5bc6ac4193a5cccdb2c83b83496" name="i_1" x="308" y="112">
+    <params>
+      <int32 name="value" value="0"/>
+    </params>
+    <attribs/>
+  </obj>
+  <obj type="ctrl/toggle" uuid="42b8134fa729d54bfc8d62d6ef3fa99498c1de99" name="AUTO-TRIGGER" x="56" y="210">
+    <params>
+      <bool32.tgl name="b" value="1"/>
+    </params>
+    <attribs/>
+  </obj>
+  <obj type="ctrl/button" uuid="ef3d13774349df85aa9bfecf30dbc91ab8488b3f" name="MANUAL START" x="168" y="210">
+    <params>
+      <bool32.mom name="b" value="0"/>
+    </params>
+    <attribs/>
+  </obj>
+  <obj type="logic/and 2" uuid="c67031682f552aa0a80b23377495c51ea28a8c9c" name="and 2_1" x="266" y="210">
+    <params/>
+    <attribs/>
+  </obj>
+  <obj type="logic/or 2" uuid="3805d3c84d30032a44fbdbe42d9a2988a1790a3e" name="or 2_1" x="350" y="210">
+    <params/>
+    <attribs/>
+  </obj>
+  <comment type="patch/comment" x="546" y="210" text="&lt;html&gt;&lt;div style=&quot;font-size:18pt; color:#FF00FF;&quot;&gt;^^^^^^^^^^^^"/>
+  <obj type="lfo/square" uuid="de6909eb64db13af5b43f979a4c130024b3a4793" name="trigger_240 bpm" x="56" y="280">
+    <params>
+      <frac32.s.map name="pitch" value="-4.376316547393799"/>
+    </params>
+    <attribs/>
+  </obj>
+  <obj type="ctrl/button" uuid="ef3d13774349df85aa9bfecf30dbc91ab8488b3f" name="STOP" x="56" y="392">
+    <params>
+      <bool32.mom name="b" value="0"/>
+    </params>
+    <attribs/>
+  </obj>
+  <nets>
+    <net>
+      <source obj="STOP" outlet="o"/>
+      <dest obj="stream fn stereo" inlet="stop"/>
+    </net>
+    <net>
+      <source obj="stream fn stereo" outlet="outl"/>
+      <dest obj="scope 128 b zoom_1" inlet="in"/>
+      <dest obj="out stereo_1" inlet="left"/>
+    </net>
+    <net>
+      <source obj="stream fn stereo" outlet="outr"/>
+      <dest obj="scope 128 b zoom_2" inlet="in"/>
+      <dest obj="out stereo_1" inlet="right"/>
+    </net>
+    <net>
+      <source obj="&lt;html&gt;&lt;b&gt;POSITION" outlet="out"/>
+      <dest obj="stream fn stereo" inlet="pos"/>
+    </net>
+    <net>
+      <source obj="c_1" outlet="out"/>
+      <dest obj="mux2_1" inlet="i0"/>
+    </net>
+    <net>
+      <source obj="c_2" outlet="out"/>
+      <dest obj="mux2_1" inlet="i1"/>
+    </net>
+    <net>
+      <source obj="mux2_1" outlet="out"/>
+      <dest obj="stream fn stereo" inlet="filename"/>
+    </net>
+    <net>
+      <source obj="AUTO-TRIGGER" outlet="o"/>
+      <dest obj="and 2_1" inlet="i1"/>
+    </net>
+    <net>
+      <source obj="trigger_240 bpm" outlet="wave"/>
+      <dest obj="and 2_1" inlet="i2"/>
+    </net>
+    <net>
+      <source obj="and 2_1" outlet="o"/>
+      <dest obj="or 2_1" inlet="i1"/>
+    </net>
+    <net>
+      <source obj="MANUAL START" outlet="o"/>
+      <dest obj="or 2_1" inlet="i2"/>
+    </net>
+    <net>
+      <source obj="or 2_1" outlet="o"/>
+      <dest obj="stream fn stereo" inlet="start"/>
+    </net>
+    <net>
+      <source obj="sample switcher" outlet="wave"/>
+      <dest obj="mux2_1" inlet="sel"/>
+    </net>
+  </nets>
+  <settings>
+    <subpatchmode>no</subpatchmode>
+  </settings>
+  <notes><![CDATA[]]></notes>
+  <windowPos>
+    <x>512</x>
+    <y>156</y>
+    <width>1289</width>
+    <height>612</height>
+  </windowPos>
+</patch-1.0>
