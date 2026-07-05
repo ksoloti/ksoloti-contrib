@@ -65,7 +65,7 @@ static __INL msg_t ThreadSD(void *arg) {
                 if (err) report_fatfs_error(err, &s->filename[0]);
 
                 if (s->initial_pos > 0) {
-                    uint32_t new_seek_pos = (uint32_t)(___SMMUL(s->initial_pos, s->f.fsize))<<2;
+                    uint32_t new_seek_pos = (uint32_t)(___SMMUL(s->initial_pos, f_size(&s->f)))<<2;
                     err = f_lseek(&s->f, new_seek_pos);
                     if (err) report_fatfs_error(err, &s->filename[0]);
                     s->initial_pos = 0; 
